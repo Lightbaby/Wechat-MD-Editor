@@ -1,0 +1,5 @@
+{
+  "name": "WeChat MD Editor (公众号排版神器)",
+  "description": "A Markdown-to-WeChat formatting tool with AI-powered content enhancement. Paste Markdown, choose a theme, and copy perfectly formatted content for WeChat Official Accounts.",
+  "requestFramePermissions": []
+}
