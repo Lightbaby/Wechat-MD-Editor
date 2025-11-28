@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+每次进行代码更新之后 在 CHANGELOG.MD 记录跟新日志
