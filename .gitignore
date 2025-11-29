@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Deploy scripts (local only)
+deploy.sh
+
+# Playwright screenshots
+.playwright-mcp/

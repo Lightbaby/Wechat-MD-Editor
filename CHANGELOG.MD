@@ -17,6 +17,7 @@
   - 配置保存在 localStorage，安全存储在本地
 - 新增 `services/aiService.ts` - OpenAI SDK 兼容的 AI 服务
 - 新增 OpenRouter 支持 - API 聚合平台，可访问 400+ AI 模型
+- 部署到 Cloudflare Pages - https://wechat-md-editor.pages.dev
 
 ### Changed
 - **AI 服务重构** - 从 Gemini SDK 迁移到 OpenAI 兼容格式
