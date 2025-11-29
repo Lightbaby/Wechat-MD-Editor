@@ -12,10 +12,11 @@
 ### Added
 - **AI 设置面板** - 用户可自行配置 API Key、API 端点和模型
   - 新增 `components/SettingsPanel.tsx` - 设置界面组件
-  - 支持多种 OpenAI 兼容 API（OpenAI、DeepSeek、Moonshot、通义千问、智谱 GLM 等）
-  - 预设常用端点和模型快速选择
+  - 支持多种 OpenAI 兼容 API（OpenAI、OpenRouter、DeepSeek、Moonshot、通义千问、智谱 GLM、SiliconFlow 等）
+  - 预设常用 API 端点快速选择
   - 配置保存在 localStorage，安全存储在本地
 - 新增 `services/aiService.ts` - OpenAI SDK 兼容的 AI 服务
+- 新增 OpenRouter 支持 - API 聚合平台，可访问 400+ AI 模型
 
 ### Changed
 - **AI 服务重构** - 从 Gemini SDK 迁移到 OpenAI 兼容格式

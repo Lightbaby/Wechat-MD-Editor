@@ -41,6 +41,20 @@ npm run dev
 
 > 💡 配置仅保存在本地浏览器的 localStorage 中，不会上传到任何服务器。
 
+## 🔗 支持的 API 服务
+
+| 服务 | 端点 |
+|------|------|
+| OpenAI | `https://api.openai.com/v1` |
+| OpenRouter | `https://openrouter.ai/api/v1` |
+| DeepSeek | `https://api.deepseek.com/v1` |
+| Moonshot | `https://api.moonshot.cn/v1` |
+| 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| 智谱 GLM | `https://open.bigmodel.cn/api/paas/v4` |
+| SiliconFlow | `https://api.siliconflow.cn/v1` |
+
+> 💡 **OpenRouter** 是一个 API 聚合平台，可通过一个端点访问 400+ AI 模型（OpenAI、Anthropic、Google 等）
+
 ## ☁️ 部署到 Cloudflare Pages
 
 本项目是纯前端应用，非常适合部署到 Cloudflare Pages：

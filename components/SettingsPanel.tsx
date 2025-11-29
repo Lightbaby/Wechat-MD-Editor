@@ -33,24 +33,12 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
   // 预设的 API 端点
   const presetEndpoints = [
     { label: 'OpenAI', url: 'https://api.openai.com/v1' },
-    { label: 'Azure OpenAI', url: 'https://YOUR_RESOURCE.openai.azure.com/openai/deployments/YOUR_DEPLOYMENT' },
+    { label: 'OpenRouter', url: 'https://openrouter.ai/api/v1' },
     { label: 'DeepSeek', url: 'https://api.deepseek.com/v1' },
     { label: 'Moonshot', url: 'https://api.moonshot.cn/v1' },
-    { label: 'Qwen (通义千问)', url: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
-    { label: 'GLM (智谱)', url: 'https://open.bigmodel.cn/api/paas/v4' },
+    { label: 'Qwen', url: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+    { label: '智谱 GLM', url: 'https://open.bigmodel.cn/api/paas/v4' },
     { label: 'SiliconFlow', url: 'https://api.siliconflow.cn/v1' },
-  ];
-
-  // 常用模型
-  const presetModels = [
-    'gpt-4o-mini',
-    'gpt-4o',
-    'gpt-4-turbo',
-    'gpt-3.5-turbo',
-    'deepseek-chat',
-    'moonshot-v1-8k',
-    'qwen-turbo',
-    'glm-4-flash',
   ];
 
   return (
@@ -160,31 +148,16 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
             type="text"
             value={config.model}
             onChange={(e) => handleChange('model', e.target.value)}
-            placeholder="gpt-4o-mini"
+            placeholder="输入模型 ID，如 gpt-4o-mini"
             className="
               w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm
               focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300
               placeholder:text-gray-400 transition-all
             "
           />
-          {/* Preset Models */}
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {presetModels.map((model) => (
-              <button
-                key={model}
-                onClick={() => handleChange('model', model)}
-                className={`
-                  px-2 py-1 text-xs rounded-md transition-all
-                  ${config.model === model
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }
-                `}
-              >
-                {model}
-              </button>
-            ))}
-          </div>
+          <p className="mt-1.5 text-xs text-gray-400">
+            请从服务商官网获取正确的模型 ID
+          </p>
         </div>
 
         {/* Save Button */}
@@ -212,7 +185,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
       {/* Footer */}
       <div className="mt-8 pt-4 border-t border-gray-100">
         <p className="text-xs text-gray-400 leading-relaxed font-light">
-          支持所有 OpenAI 兼容的 API，包括 DeepSeek、Moonshot、通义千问等。
+          支持所有 OpenAI 兼容的 API，包括 OpenRouter、DeepSeek、Moonshot、通义千问、智谱 GLM 等。
         </p>
       </div>
     </div>
