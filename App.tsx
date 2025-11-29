@@ -13,12 +13,10 @@ import {
   Palette, 
   PenLine,
   Settings,
-  ChevronRight,
   Wrench,
   Type,
   Wand2,
   Loader2,
-  Command,
   AlertCircle
 } from 'lucide-react';
 
@@ -176,8 +174,8 @@ const App: React.FC = () => {
       
       {/* 1. Sidebar Navigation - Ultra Minimal */}
       <aside className="w-[60px] bg-white flex flex-col items-center py-6 z-30 border-r border-gray-100 flex-shrink-0">
-        <div className="mb-8 text-gray-900">
-           <Command size={24} strokeWidth={1.5} />
+        <div className="mb-8">
+           <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
         </div>
         
         <nav className="flex flex-col w-full items-center gap-4">

@@ -1,0 +1,17 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景：纯净白或透明 -->
+  <rect width="200" height="200" fill="white"/>
+  
+  <!-- Logo 主体 -->
+  <g transform="translate(50, 50)">
+    <!-- 左侧块 -->
+    <path d="M0 0 H45 V60 H0 Z" fill="#07C160"/>
+    <!-- 右侧块 -->
+    <path d="M55 0 H100 V40 H55 Z" fill="#07C160" opacity="0.6"/>
+    <!-- 下方块（笔尖基座） -->
+    <path d="M0 70 H45 V100 H0 Z" fill="#07C160" opacity="0.8"/>
+    <!-- 右下点缀（完成/高级感） -->
+    <circle cx="77.5" cy="77.5" r="22.5" fill="#2C2C2C"/>
+  </g>
+</svg>
+

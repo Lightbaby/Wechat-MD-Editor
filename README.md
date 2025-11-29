@@ -1,12 +1,14 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  <img src="public/logo.svg" alt="WeChat MD Editor Logo" width="120" height="120" />
+  
+  <h1>微信公众号 Markdown 编辑器</h1>
+  
+  <p>一款优雅的微信公众号排版工具，支持多种主题样式和 AI 辅助写作。</p>
+  
+  <p>
+    <a href="https://wechat-md-editor.pages.dev">🔗 在线体验</a>
+  </p>
 </div>
-
-# 微信公众号 Markdown 编辑器
-
-一款优雅的微信公众号排版工具，支持多种主题样式和 AI 辅助写作。
-
-🔗 **在线体验**: [wechat-md-editor.pages.dev](https://wechat-md-editor.pages.dev)
 
 ## ✨ 功能特性
 
