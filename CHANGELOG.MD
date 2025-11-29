@@ -10,6 +10,32 @@
 ## [Unreleased]
 
 ### Added
+- **AI 设置面板** - 用户可自行配置 API Key、API 端点和模型
+  - 新增 `components/SettingsPanel.tsx` - 设置界面组件
+  - 支持多种 OpenAI 兼容 API（OpenAI、DeepSeek、Moonshot、通义千问、智谱 GLM 等）
+  - 预设常用端点和模型快速选择
+  - 配置保存在 localStorage，安全存储在本地
+- 新增 `services/aiService.ts` - OpenAI SDK 兼容的 AI 服务
+
+### Changed
+- **AI 服务重构** - 从 Gemini SDK 迁移到 OpenAI 兼容格式
+  - 移除 `@google/genai` 依赖
+  - 删除 `services/geminiService.ts`
+  - 使用原生 fetch 调用 OpenAI 兼容 API
+- **配置方式变更** - 无需环境变量，前端用户自行配置
+  - 移除 `vite.config.ts` 中的环境变量注入
+  - 无需 `.env.local` 文件
+  - 适合部署到 Cloudflare Pages 等静态托管平台
+
+### Removed
+- 移除 `@google/genai` 依赖
+- 移除 Gemini API 相关代码
+
+---
+
+## [0.1.0] - 2025-11-28
+
+### Added
 - 初始化 Cursor Rules 配置
   - 创建 `.cursor/rules/` 目录
   - 添加 `changlogs.mdc` - 自动记录更新日志规则

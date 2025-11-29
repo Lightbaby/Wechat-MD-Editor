@@ -1,10 +1,11 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { THEMES, DEFAULT_MARKDOWN } from './constants';
-import { Theme, AIActionType } from './types';
+import { Theme, AIActionType, AIConfig, loadAIConfig, isAIConfigured } from './types';
 import Editor from './components/Editor';
 import Preview from './components/Preview';
 import ThemePanel from './components/ThemePanel';
-import { enhanceContent } from './services/geminiService';
+import SettingsPanel from './components/SettingsPanel';
+import { enhanceContent } from './services/aiService';
 import { 
   Sparkles, 
   Copy, 
@@ -17,10 +18,11 @@ import {
   Type,
   Wand2,
   Loader2,
-  Command
+  Command,
+  AlertCircle
 } from 'lucide-react';
 
-type TabType = 'editor' | 'theme' | 'ai';
+type TabType = 'editor' | 'theme' | 'ai' | 'settings';
 
 const App: React.FC = () => {
   const [markdown, setMarkdown] = useState<string>(DEFAULT_MARKDOWN);
@@ -33,6 +35,19 @@ const App: React.FC = () => {
   const [aiResult, setAiResult] = useState<string | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiModalTitle, setAiModalTitle] = useState("");
+  
+  // AI Config State
+  const [aiConfig, setAiConfig] = useState<AIConfig>(loadAIConfig());
+  const aiConfigured = isAIConfigured(aiConfig);
+
+  // Load AI config on mount
+  useEffect(() => {
+    setAiConfig(loadAIConfig());
+  }, []);
+
+  const handleAiConfigChange = (config: AIConfig) => {
+    setAiConfig(config);
+  };
   
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +96,11 @@ const App: React.FC = () => {
   }, []);
 
   const handleAiAction = async (type: AIActionType) => {
+    if (!aiConfigured) {
+      setActiveTab('settings');
+      return;
+    }
+
     setIsAiLoading(true);
     setAiResult(null);
     setAiModalTitle(
@@ -93,10 +113,11 @@ const App: React.FC = () => {
     setShowAiModal(true);
 
     try {
-      const result = await enhanceContent(markdown, type);
+      const result = await enhanceContent(markdown, type, aiConfig);
       setAiResult(result);
     } catch (error) {
-      setAiResult("AI 服务暂时不可用，请检查网络或 API Key 设置。");
+      const errorMessage = error instanceof Error ? error.message : '未知错误';
+      setAiResult(`AI 服务出错: ${errorMessage}`);
     } finally {
       setIsAiLoading(false);
     }
@@ -184,9 +205,13 @@ const App: React.FC = () => {
         </nav>
 
         <div className="mt-auto flex flex-col gap-4 mb-2">
-           <button className="w-10 h-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors">
-             <Settings size={20} strokeWidth={1.5} />
-           </button>
+           <NavButton 
+             id="settings" 
+             icon={Settings} 
+             label="设置" 
+             isActive={activeTab === 'settings'} 
+             onClick={() => toggleTab('settings')} 
+           />
         </div>
       </aside>
 
@@ -210,8 +235,24 @@ const App: React.FC = () => {
             <div className="h-full p-6 flex flex-col">
                <header className="mb-8">
                  <h2 className="text-lg font-medium text-gray-900 mb-1">智能助手</h2>
-                 <p className="text-sm text-gray-500 font-light">Gemini 驱动的写作增强工具</p>
+                 <p className="text-sm text-gray-500 font-light">AI 驱动的写作增强工具</p>
                </header>
+
+               {/* Warning if not configured */}
+               {!aiConfigured && (
+                 <div className="mb-6 p-3 rounded-lg bg-amber-50 border border-amber-100 flex items-start gap-3">
+                   <AlertCircle size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                   <div>
+                     <p className="text-sm text-amber-700">请先配置 AI 设置</p>
+                     <button 
+                       onClick={() => setActiveTab('settings')}
+                       className="text-xs text-amber-600 hover:text-amber-800 underline mt-1"
+                     >
+                       前往设置 →
+                     </button>
+                   </div>
+                 </div>
+               )}
                
                <div className="flex flex-col gap-1">
                   {[
@@ -223,17 +264,22 @@ const App: React.FC = () => {
                     <button 
                       key={item.id}
                       onClick={() => handleAiAction(item.id as AIActionType)}
-                      className="
+                      disabled={!aiConfigured}
+                      className={`
                         group flex items-center gap-4 p-3 rounded-lg transition-all duration-200
-                        hover:bg-gray-50 text-left border border-transparent hover:border-gray-100
-                      "
+                        text-left border border-transparent
+                        ${aiConfigured 
+                          ? 'hover:bg-gray-50 hover:border-gray-100' 
+                          : 'opacity-50 cursor-not-allowed'
+                        }
+                      `}
                     >
-                        <div className="text-gray-400 group-hover:text-gray-900 transition-colors">
+                        <div className={`transition-colors ${aiConfigured ? 'text-gray-400 group-hover:text-gray-900' : 'text-gray-300'}`}>
                           <item.icon size={18} strokeWidth={1.5} />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{item.title}</div>
-                          <div className="text-xs text-gray-400 group-hover:text-gray-500 font-light">{item.desc}</div>
+                          <div className={`text-sm font-medium ${aiConfigured ? 'text-gray-700 group-hover:text-gray-900' : 'text-gray-400'}`}>{item.title}</div>
+                          <div className={`text-xs font-light ${aiConfigured ? 'text-gray-400 group-hover:text-gray-500' : 'text-gray-300'}`}>{item.desc}</div>
                         </div>
                     </button>
                   ))}
@@ -245,6 +291,10 @@ const App: React.FC = () => {
                   </p>
                </div>
             </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <SettingsPanel onConfigChange={handleAiConfigChange} />
           )}
         </div>
       </div>
