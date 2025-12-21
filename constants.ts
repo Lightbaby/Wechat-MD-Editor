@@ -1,24 +1,12 @@
 import { Theme } from './types';
 
-export const DEFAULT_MARKDOWN = `# 欢迎使用公众号排版神器
-
-这是一个 **所见即所得** 的 Markdown 编辑器，专为微信公众号设计。
-
-## ✨ 主要功能
-
-1. **多主题切换**：点击上方工具栏切换不同风格。
-2. **AI 智能辅助**：利用 Gemini 模型润色文章、生成标题。
-3. **一键复制**：直接复制渲染后的格式，完美粘贴到公众号后台。
-
-## 🎨 样式展示
-
-### 引用样式
+export const DEFAULT_MARKDOWN = `### 引用样式
 > 这是一个引用段落。设计的本质是解决问题，而不仅仅是美化外观。
 
 ### 列表样式
-*   简洁的界面
-*   快速的响应
-*   优雅的排版
+* 简洁的界面
+* 快速的响应
+* 优雅的排版
 
 ### 代码块
 \`\`\`javascript
@@ -61,7 +49,7 @@ const baseLi = {
 // Common list container styles
 const baseList = {
   margin: '0 0 1.5em 0',
-  paddingLeft: '10px', 
+  paddingLeft: '10px',
   listStylePosition: 'inside' as const,
   listStyleType: 'disc', // Default fallback
 };
@@ -379,18 +367,18 @@ export const THEMES: Theme[] = [
       },
       list: baseList,
       li: { ...baseLi, color: '#333' },
-      code: { 
-          backgroundColor: '#f9f0ff', 
-          color: '#722ed1', 
-          padding: '2px 4px', 
-          borderRadius: '4px', 
-          fontFamily: 'Consolas, Monaco, monospace',
-          fontSize: '14px',
+      code: {
+        backgroundColor: '#f9f0ff',
+        color: '#722ed1',
+        padding: '2px 4px',
+        borderRadius: '4px',
+        fontFamily: 'Consolas, Monaco, monospace',
+        fontSize: '14px',
       },
-      link: { 
-          color: '#722ed1', 
-          textDecoration: 'none', 
-          borderBottom: '1px solid #722ed1' 
+      link: {
+        color: '#722ed1',
+        textDecoration: 'none',
+        borderBottom: '1px solid #722ed1'
       },
       strong: {
         color: '#722ed1',
@@ -465,19 +453,19 @@ export const THEMES: Theme[] = [
       },
       list: { ...baseList, listStyleType: 'disc' },
       li: { ...baseLi, color: '#222' },
-      code: { 
-          backgroundColor: '#f0f0f0', 
-          color: '#000', 
-          padding: '2px 4px', 
-          borderRadius: '2px', 
-          fontFamily: 'Consolas, Monaco, monospace', 
-          fontWeight: 'bold',
-          fontSize: '14px',
+      code: {
+        backgroundColor: '#f0f0f0',
+        color: '#000',
+        padding: '2px 4px',
+        borderRadius: '2px',
+        fontFamily: 'Consolas, Monaco, monospace',
+        fontWeight: 'bold',
+        fontSize: '14px',
       },
-      link: { 
-          color: '#000', 
-          textDecoration: 'underline', 
-          fontWeight: 'bold' 
+      link: {
+        color: '#000',
+        textDecoration: 'underline',
+        fontWeight: 'bold'
       },
       strong: {
         color: '#000',
@@ -552,18 +540,18 @@ export const THEMES: Theme[] = [
       },
       list: baseList,
       li: { ...baseLi, color: '#555' },
-      code: { 
-          backgroundColor: '#fff0f6', 
-          color: '#c41d7f', 
-          padding: '2px 4px', 
-          borderRadius: '4px', 
-          fontFamily: 'Consolas, Monaco, monospace',
-          fontSize: '14px',
+      code: {
+        backgroundColor: '#fff0f6',
+        color: '#c41d7f',
+        padding: '2px 4px',
+        borderRadius: '4px',
+        fontFamily: 'Consolas, Monaco, monospace',
+        fontSize: '14px',
       },
-      link: { 
-          color: '#eb2f96', 
-          textDecoration: 'none', 
-          borderBottom: '1px dotted #eb2f96' 
+      link: {
+        color: '#eb2f96',
+        textDecoration: 'none',
+        borderBottom: '1px dotted #eb2f96'
       },
       strong: {
         color: '#c41d7f',
@@ -781,12 +769,12 @@ export const THEMES: Theme[] = [
         fontFamily: SERIF_FONT_FAMILY,
         fontStyle: 'italic',
       },
-      p: { 
-        ...baseText, 
-        color: '#000', 
-        fontFamily: SERIF_FONT_FAMILY, 
+      p: {
+        ...baseText,
+        color: '#000',
+        fontFamily: SERIF_FONT_FAMILY,
         textIndent: '2em',
-        marginBottom: '1em' 
+        marginBottom: '1em'
       },
       blockquote: {
         borderLeft: '3px solid #000',
@@ -1037,9 +1025,9 @@ export const THEMES: Theme[] = [
         lineHeight: '1.4',
         fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif',
       },
-      p: { 
-        ...baseText, 
-        color: '#444', 
+      p: {
+        ...baseText,
+        color: '#444',
         fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif',
         fontSize: '16px',
         lineHeight: '1.8'

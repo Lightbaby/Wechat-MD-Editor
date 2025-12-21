@@ -6,7 +6,7 @@ interface XHSPreviewProps {
   content: string;
   template: XHSTemplate;
   config: XHSConfig;
-  currentPage: number;
+  currentPage: number; // Deprecated for display, kept for type compatibility
   onTotalPagesChange?: (total: number) => void;
 }
 
@@ -14,7 +14,6 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
   content,
   template,
   config,
-  currentPage,
   onTotalPagesChange,
 }, ref) => {
   // 获取当前颜色变体
@@ -29,18 +28,16 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
 
   // 分页内容
   const [pages, setPages] = useState<string[]>([content]);
-  const contentRef = React.useRef<HTMLDivElement>(null);
 
-  // 简单分页逻辑：根据字符数估算
+  // 分页逻辑 (Retained heuristic logic)
   useEffect(() => {
-    // 计算每页大约能容纳的字符数（粗略估算）
+    // 粗略估算每页字符数
     const charsPerPage = Math.floor((dimensions.height - config.padding * 2) / (parseInt(fontSizes.body) * config.lineHeight) * 35);
 
     if (content.length <= charsPerPage) {
       setPages([content]);
       onTotalPagesChange?.(1);
     } else {
-      // 按段落分页
       const paragraphs = content.split(/\n\n+/);
       const newPages: string[] = [];
       let currentPageContent = '';
@@ -66,11 +63,8 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
     }
   }, [content, dimensions.height, fontSizes.body, config.lineHeight, config.padding, onTotalPagesChange]);
 
-  // 当前页内容
-  const currentContent = pages[currentPage] || pages[0] || '';
-
-  // 容器样式
-  const containerStyle: React.CSSProperties = {
+  // 卡片基础样式
+  const cardBaseStyle: React.CSSProperties = {
     width: `${dimensions.width}px`,
     height: `${dimensions.height}px`,
     padding: `${config.padding}px`,
@@ -82,6 +76,10 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
     overflow: 'hidden',
     position: 'relative',
     ...template.styles.container,
+    boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.1)', // Softer, more premium shadow
+    marginBottom: '32px', // Comfortable gap
+    flexShrink: 0,
+    transition: 'all 0.3s ease',
   };
 
   // 标题样式
@@ -98,141 +96,92 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
     color: colorVariant.secondary || colorVariant.primary,
   };
 
-  // Markdown 组件配置
+  // Components Configuration
   const components = useMemo(() => ({
-    h1: ({ children }: any) => (
-      <h1 style={titleStyle}>{children}</h1>
-    ),
+    h1: ({ children }: any) => <h1 style={titleStyle}>{children}</h1>,
     h2: ({ children }: any) => (
       <h2 style={{
         ...template.styles.heading,
         fontSize: `calc(${titleFontSizes.title} * 0.85)`,
-        color: colorVariant.primary,
         borderColor: colorVariant.accent || colorVariant.primary,
-      }}>
-        {children}
-      </h2>
+      }}>{children}</h2>
     ),
     h3: ({ children }: any) => (
       <h3 style={{
         ...template.styles.heading,
         fontSize: `calc(${titleFontSizes.title} * 0.75)`,
-        color: colorVariant.primary,
-      }}>
-        {children}
-      </h3>
+        borderColor: colorVariant.accent || colorVariant.primary,
+      }}>{children}</h3>
+    ),
+    h4: ({ children }: any) => (
+      <h4 style={{
+        ...template.styles.heading,
+        fontSize: `calc(${titleFontSizes.title} * 0.65)`,
+        marginTop: '20px',
+        marginBottom: '10px',
+        borderColor: colorVariant.accent || colorVariant.primary,
+      }}>{children}</h4>
+    ),
+    h5: ({ children }: any) => (
+      <h5 style={{
+        ...template.styles.heading,
+        fontSize: `calc(${titleFontSizes.title} * 0.55)`,
+        marginTop: '16px',
+        marginBottom: '8px',
+        borderColor: colorVariant.accent || colorVariant.primary,
+      }}>{children}</h5>
+    ),
+    h6: ({ children }: any) => (
+      <h6 style={{
+        ...template.styles.heading,
+        fontSize: `calc(${titleFontSizes.title} * 0.5)`,
+        marginTop: '16px',
+        marginBottom: '8px',
+        borderColor: colorVariant.accent || colorVariant.primary,
+      }}>{children}</h6>
     ),
     p: ({ children }: any) => (
-      <p style={{
-        ...bodyStyle,
-        marginBottom: '12px',
-      }}>
-        {children}
-      </p>
+      <p style={{ ...bodyStyle, marginBottom: '16px' }}>{children}</p>
     ),
     ul: ({ children }: any) => (
-      <ul style={{
-        ...template.styles.list,
-        color: colorVariant.secondary || colorVariant.primary,
-      }}>
-        {children}
-      </ul>
+      <ul style={{ ...template.styles.list, color: colorVariant.secondary || colorVariant.primary }}>{children}</ul>
     ),
     ol: ({ children }: any) => (
-      <ol style={{
-        ...template.styles.list,
-        color: colorVariant.secondary || colorVariant.primary,
-      }}>
-        {children}
-      </ol>
+      <ol style={{ ...template.styles.list, color: colorVariant.secondary || colorVariant.primary }}>{children}</ol>
     ),
     li: ({ children }: any) => (
-      <li style={{
-        ...template.styles.listItem,
-        fontSize: fontSizes.body,
-      }}>
-        {children}
-      </li>
+      <li style={{ ...template.styles.listItem, fontSize: fontSizes.body }}>{children}</li>
     ),
     blockquote: ({ children }: any) => (
       <blockquote style={{
         ...template.styles.blockquote,
         borderColor: colorVariant.accent || colorVariant.primary,
         color: colorVariant.secondary || colorVariant.primary,
-      }}>
-        {children}
-      </blockquote>
+      }}>{children}</blockquote>
     ),
     code: ({ inline, children }: any) => {
       if (inline) {
-        return (
-          <code style={{
-            ...template.styles.code,
-            color: colorVariant.accent || colorVariant.primary,
-          }}>
-            {children}
-          </code>
-        );
+        return <code style={{ ...template.styles.code, color: colorVariant.accent || colorVariant.primary }}>{children}</code>;
       }
       return (
-        <pre style={{
-          ...template.styles.code,
-          padding: '12px',
-          borderRadius: '8px',
-          overflow: 'auto',
-          fontSize: '0.85em',
-        }}>
+        <pre style={{ ...template.styles.code, padding: '16px', borderRadius: '8px', overflow: 'auto', fontSize: '0.85em', margin: '16px 0' }}>
           <code>{children}</code>
         </pre>
       );
     },
     a: ({ children, href }: any) => (
-      <a
-        href={href}
-        style={{
-          ...template.styles.link,
-          color: colorVariant.accent || colorVariant.primary,
-        }}
-      >
-        {children}
-      </a>
+      <a href={href} style={{ ...template.styles.link, color: colorVariant.accent || colorVariant.primary }}>{children}</a>
     ),
     strong: ({ children }: any) => (
-      <strong style={{
-        ...template.styles.strong,
-        color: colorVariant.primary,
-      }}>
-        {children}
-      </strong>
+      <strong style={{ ...template.styles.strong, color: colorVariant.primary }}>{children}</strong>
     ),
     hr: () => (
-      <hr style={{
-        ...template.styles.divider,
-        border: 'none',
-        backgroundColor: colorVariant.accent || colorVariant.secondary || colorVariant.primary,
-        opacity: 0.3,
-      }} />
+      <hr style={{ ...template.styles.divider, border: 'none', backgroundColor: colorVariant.accent || colorVariant.secondary || colorVariant.primary, opacity: 0.2 }} />
     ),
     img: ({ src, alt }: any) => (
-      <div style={{ margin: '16px 0', textAlign: 'center' as const }}>
-        <img
-          src={src}
-          alt={alt}
-          style={{
-            maxWidth: '100%',
-            height: 'auto',
-            borderRadius: '8px',
-          }}
-        />
-        {alt && (
-          <p style={{
-            fontSize: '12px',
-            color: colorVariant.secondary,
-            marginTop: '8px',
-          }}>
-            {alt}
-          </p>
-        )}
+      <div style={{ margin: '20px 0', textAlign: 'center' as const }}>
+        <img src={src} alt={alt} style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }} />
+        {alt && <p style={{ fontSize: '12px', color: colorVariant.secondary, marginTop: '8px', opacity: 0.8 }}>{alt}</p>}
       </div>
     ),
   }), [template, colorVariant, titleFontSizes, fontSizes, bodyStyle, titleStyle]);
@@ -240,14 +189,33 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
   return (
     <div
       ref={ref}
-      style={containerStyle}
-      className="xhs-preview"
+      className="xhs-preview-list flex flex-col items-center pb-20 w-full"
     >
-      <div ref={contentRef} style={{ height: '100%', overflow: 'hidden' }}>
-        <ReactMarkdown components={components}>
-          {currentContent}
-        </ReactMarkdown>
-      </div>
+      {pages.map((pageContent, index) => (
+        <div key={index} className="relative group">
+          <div style={cardBaseStyle} className="xhs-card">
+            <div style={{ height: '100%', overflow: 'hidden' }}>
+              <ReactMarkdown components={components}>
+                {pageContent}
+              </ReactMarkdown>
+            </div>
+
+            {/* Page Number Indicator */}
+            <div style={{
+              position: 'absolute',
+              bottom: '12px',
+              right: '16px',
+              fontSize: '11px',
+              opacity: 0.3,
+              fontWeight: 600,
+              pointerEvents: 'none',
+              fontFamily: 'sans-serif'
+            }}>
+              {index + 1} / {pages.length}
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 });
