@@ -8,14 +8,14 @@ interface ModeSwitchProps {
 
 const ModeSwitch: React.FC<ModeSwitchProps> = ({ mode, onChange }) => {
   return (
-    <div className="flex items-center bg-[#F5F5F5] rounded-lg p-1">
+    <div className="flex items-center bg-bg-hover rounded-lg p-1">
       <button
         onClick={() => onChange('wechat')}
         className={`
           flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200
           ${mode === 'wechat'
-            ? 'bg-white text-[#333333] shadow-sm'
-            : 'text-[#999999] hover:text-[#666666]'
+            ? 'bg-bg-panel text-text-main shadow-elevation-1'
+            : 'text-text-sub hover:text-text-main'
           }
         `}
       >
@@ -45,8 +45,8 @@ const ModeSwitch: React.FC<ModeSwitchProps> = ({ mode, onChange }) => {
         className={`
           flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200
           ${mode === 'xiaohongshu'
-            ? 'bg-white text-[#333333] shadow-sm'
-            : 'text-[#999999] hover:text-[#666666]'
+            ? 'bg-bg-panel text-text-main shadow-elevation-1'
+            : 'text-text-sub hover:text-text-main'
           }
         `}
       >

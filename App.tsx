@@ -102,7 +102,7 @@ const App: React.FC = () => {
     setXHSConfig(prev => ({ ...prev, ...updates }));
   };
 
-  // Export XHS preview as image
+  // Export XHS preview as images (each page separately)
   const handleExportImage = async () => {
     if (!xhsPreviewRef.current) return;
 
@@ -110,17 +110,32 @@ const App: React.FC = () => {
     try {
       // Dynamic import html2canvas
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(xhsPreviewRef.current, {
-        scale: 2,
-        backgroundColor: null,
-        useCORS: true,
-      });
 
-      // Download image
-      const link = document.createElement('a');
-      link.download = `xiaohongshu-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      // Find all page elements
+      const pages = xhsPreviewRef.current.querySelectorAll('.xhs-page');
+      const timestamp = Date.now();
+
+      // Export each page separately
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i] as HTMLElement;
+        const canvas = await html2canvas(page, {
+          scale: 2,
+          backgroundColor: null,
+          useCORS: true,
+        });
+
+        // Download image
+        const link = document.createElement('a');
+        const pageNum = pages.length > 1 ? `-${i + 1}` : '';
+        link.download = `xiaohongshu-${timestamp}${pageNum}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        // Small delay between downloads to avoid browser blocking
+        if (i < pages.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+      }
     } catch (error) {
       console.error('Export failed:', error);
     } finally {
@@ -242,12 +257,12 @@ const App: React.FC = () => {
       return (
         <div className="h-full flex flex-col overflow-hidden">
           {/* XHS Sub-tabs */}
-          <div className="px-4 py-3 flex gap-2 border-b border-[#E5E5E5] bg-[#FAFAFA]">
+          <div className="px-4 py-3 flex gap-2 border-b border-border-light bg-bg-app">
             <button
               onClick={() => setXhsPanelTab('templates')}
               className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${xhsPanelTab === 'templates'
-                ? 'bg-white text-[#333] shadow-sm ring-1 ring-black/5'
-                : 'text-[#999] hover:bg-[#E5E5E5]/50'
+                ? 'bg-bg-panel text-text-main shadow-elevation-1 ring-1 ring-border-light'
+                : 'text-text-sub hover:bg-bg-hover'
                 }`}
             >
               模板选择
@@ -255,8 +270,8 @@ const App: React.FC = () => {
             <button
               onClick={() => setXhsPanelTab('adjust')}
               className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${xhsPanelTab === 'adjust'
-                ? 'bg-white text-[#333] shadow-sm ring-1 ring-black/5'
-                : 'text-[#999] hover:bg-[#E5E5E5]/50'
+                ? 'bg-bg-panel text-text-main shadow-elevation-1 ring-1 ring-border-light'
+                : 'text-text-sub hover:bg-bg-hover'
                 }`}
             >
               精细调整
@@ -285,14 +300,14 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col h-screen bg-white text-[#333333] overflow-hidden font-sans selection:bg-[#E5E5E5]">
+    <div className="flex flex-col h-screen bg-bg-app text-text-main overflow-hidden font-sans">
 
       {/* 1. HEADER */}
-      <header className="h-14 border-b border-[#E5E5E5] bg-white flex items-center justify-between px-4 md:px-6 flex-shrink-0 z-20 relative shadow-sm">
+      <header className="h-14 border-b border-border-light bg-bg-panel flex items-center justify-between px-4 md:px-6 flex-shrink-0 z-20 relative shadow-elevation-1">
         {/* Left: Logo & Title */}
         <div className="flex items-center gap-3">
           <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
-          <h1 className="font-semibold text-lg tracking-tight text-[#333333]">WeChat Editor</h1>
+          <h1 className="font-semibold text-lg tracking-tight text-text-main">MD 排版神器</h1>
         </div>
 
         {/* Center: Mode Switch */}
@@ -305,7 +320,7 @@ const App: React.FC = () => {
           {/* Settings Button */}
           <button
             onClick={() => setShowSettingsModal(true)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#666666] hover:bg-[#F5F5F5] hover:text-[#333333] transition-all"
+            className="w-8 h-8 rounded-md flex items-center justify-center text-text-sub hover:bg-bg-hover hover:text-text-main transition-all"
             title="设置"
           >
             <Settings size={18} strokeWidth={1.5} />
@@ -317,13 +332,13 @@ const App: React.FC = () => {
               className={`
                   flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300
                   ${isCopied
-                  ? 'bg-[#F5F5F5] text-[#333333]'
-                  : 'bg-[#1677FF] text-white hover:bg-[#0958D9] shadow-sm hover:shadow'
+                  ? 'bg-bg-hover text-text-main'
+                  : 'bg-brand text-white hover:bg-brand-hover shadow-elevation-1 hover:shadow-elevation-2'
                 }
                 `}
             >
               {isCopied ? <Check size={14} /> : <Copy size={14} />}
-              {isCopied ? 'Copied' : 'Copy'}
+              {isCopied ? '已复制' : '复制'}
             </button>
           ) : (
             <button
@@ -332,13 +347,13 @@ const App: React.FC = () => {
               className={`
                   flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300
                   ${isExporting
-                  ? 'bg-[#F5F5F5] text-[#999999] cursor-not-allowed'
-                  : 'bg-[#FF2442] text-white hover:bg-[#E01F3D] shadow-sm hover:shadow'
+                  ? 'bg-bg-hover text-text-sub cursor-not-allowed'
+                  : 'bg-xhs-red text-white hover:bg-xhs-red-hover shadow-elevation-1 hover:shadow-elevation-2'
                 }
                 `}
             >
               {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-              {isExporting ? 'Exporting...' : 'Export Image'}
+              {isExporting ? '导出中...' : '导出图片'}
             </button>
           )}
         </div>
@@ -348,20 +363,20 @@ const App: React.FC = () => {
       <main className="flex-1 flex overflow-hidden">
 
         {/* Left Column: Editor with AI Action Bar */}
-        <div className="w-[30%] min-w-[320px] max-w-[500px] border-r border-[#E5E5E5] flex flex-col bg-gray-50 relative">
+        <div className="w-[30%] min-w-[320px] max-w-[500px] border-r border-border-light flex flex-col bg-bg-panel relative">
           {/* Editor with bottom padding for action bar */}
           <div className="flex-1 overflow-hidden">
             <textarea
-              className="w-full h-full p-6 pb-16 resize-none focus:outline-none bg-gray-50 text-gray-700 font-mono text-sm leading-relaxed"
+              className="w-full h-full p-6 pb-16 resize-none focus:outline-none bg-bg-panel text-text-main font-mono text-sm leading-relaxed selection:bg-brand/10 selection:text-brand"
               value={markdown}
               onChange={(e) => setMarkdown(e.target.value)}
-              placeholder="# Start typing your markdown here..."
+              placeholder="# 在这里输入 Markdown 内容..."
               spellCheck={false}
             />
           </div>
 
           {/* AI Action Bar - Sticky Bottom */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gray-50 px-4 py-3">
+          <div className="absolute bottom-0 left-0 right-0 bg-bg-panel/95 backdrop-blur-sm px-4 py-3 border-t border-border-light">
             <div className="flex items-center gap-2">
               {/* Action Buttons */}
               {[
@@ -375,10 +390,10 @@ const App: React.FC = () => {
                   onClick={() => handleAiAction(item.id as AIActionType)}
                   disabled={!aiConfigured}
                   className={`
-                    flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all flex-shrink-0 shadow-sm
+                    flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all flex-shrink-0 shadow-elevation-1
                     ${aiConfigured
-                      ? `${item.color} text-white hover:opacity-90 hover:shadow`
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? `${item.color} text-white hover:opacity-90 hover:shadow-elevation-2`
+                      : 'bg-bg-hover text-text-sub cursor-not-allowed'
                     }
                   `}
                   title={!aiConfigured ? '请先配置 AI 设置' : item.label}
@@ -392,7 +407,7 @@ const App: React.FC = () => {
               {!aiConfigured && (
                 <button
                   onClick={() => setShowSettingsModal(true)}
-                  className="text-xs text-amber-600 hover:text-amber-700 underline flex-shrink-0 ml-auto"
+                  className="text-xs text-brand hover:text-brand-hover underline flex-shrink-0 ml-auto"
                 >
                   配置 AI →
                 </button>
@@ -402,20 +417,20 @@ const App: React.FC = () => {
         </div>
 
         {/* Center Column: Preview */}
-        <div className="flex-1 bg-[#F5F5F5] flex flex-col relative min-w-[375px]">
+        <div className="flex-1 bg-bg-app flex flex-col relative min-w-[375px]">
           {/* Preview Toolbar / Info (Optional) */}
-          <div className="h-10 flex items-center justify-center text-xs text-[#999999] bg-[#F5F5F5] select-none">
+          <div className="h-10 flex items-center justify-center text-xs text-text-sub bg-bg-app select-none">
             {editorMode === 'wechat' ? (
-              <span className="flex items-center gap-1"><Monitor size={12} /> Desktop / Mobile Preview</span>
+              <span className="flex items-center gap-1"><Monitor size={12} /> 公众号预览</span>
             ) : (
-              <span className="flex items-center gap-1"><Smartphone size={12} /> iPhone Preview</span>
+              <span className="flex items-center gap-1"><Smartphone size={12} /> 小红书预览</span>
             )}
           </div>
 
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex justify-center p-4 md:p-8">
             {/* Preview Container */}
             {editorMode === 'wechat' ? (
-              <div className="w-full max-w-[420px] bg-white min-h-[800px] shadow-sm border border-[#E5E5E5] transition-all duration-200">
+              <div className="w-full max-w-[420px] bg-bg-panel min-h-[800px] shadow-elevation-2 border border-border-light transition-all duration-200">
                 <Preview
                   ref={previewRef}
                   content={markdown}
@@ -438,11 +453,11 @@ const App: React.FC = () => {
         </div>
 
         {/* Right Column: Design Panel Only */}
-        <div className="w-[320px] flex-shrink-0 bg-white border-l border-[#E5E5E5] flex flex-col">
+        <div className="w-[320px] flex-shrink-0 bg-bg-panel border-l border-border-light flex flex-col">
           {/* Panel Header */}
-          <div className="h-10 flex items-center px-4 border-b border-[#E5E5E5] bg-[#FAFAFA]">
-            <Palette size={14} className="text-[#999999] mr-2" />
-            <span className="text-xs font-medium text-[#666666]">
+          <div className="h-10 flex items-center px-4 border-b border-border-light bg-bg-app">
+            <Palette size={14} className="text-text-sub mr-2" />
+            <span className="text-xs font-medium text-text-main">
               {editorMode === 'wechat' ? '主题样式' : '模板设计'}
             </span>
           </div>
@@ -457,17 +472,17 @@ const App: React.FC = () => {
 
       {/* Polish Style Selection Modal */}
       {showPolishModal && (
-        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]">
-          <div className="bg-white rounded-xl shadow-2xl ring-1 ring-black/5 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-text-main/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]">
+          <div className="bg-bg-panel rounded-xl shadow-elevation-3 ring-1 ring-border-light w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center">
-              <h3 className="font-medium text-[#333333] flex items-center gap-2">
-                <Sparkles size={16} className="text-[#1677FF]" />
+            <div className="px-6 py-4 border-b border-border-light flex justify-between items-center">
+              <h3 className="font-medium text-text-main flex items-center gap-2">
+                <Sparkles size={16} className="text-brand" />
                 选择润色方向
               </h3>
               <button
                 onClick={() => setShowPolishModal(false)}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#333333] hover:bg-[#F5F5F5] transition-all"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-text-sub hover:text-text-main hover:bg-bg-hover transition-all"
               >
                 <X size={16} />
               </button>
@@ -486,22 +501,22 @@ const App: React.FC = () => {
                     className={`
                       p-3 rounded-lg border-2 text-left transition-all duration-200
                       ${selectedPolishStyle?.id === style.id
-                        ? 'border-[#1677FF] bg-[#F0F7FF]'
-                        : 'border-[#E5E5E5] hover:border-[#1677FF]/50 hover:bg-[#FAFAFA]'
+                        ? 'border-brand bg-brand/5'
+                        : 'border-border-light hover:border-brand/50 hover:bg-bg-hover'
                       }
                     `}
                   >
-                    <div className={`text-sm font-medium mb-0.5 ${selectedPolishStyle?.id === style.id ? 'text-[#1677FF]' : 'text-[#333333]'}`}>
+                    <div className={`text-sm font-medium mb-0.5 ${selectedPolishStyle?.id === style.id ? 'text-brand' : 'text-text-main'}`}>
                       {style.name}
                     </div>
-                    <div className="text-xs text-[#999999]">{style.description}</div>
+                    <div className="text-xs text-text-sub">{style.description}</div>
                   </button>
                 ))}
               </div>
 
               {/* Custom Prompt */}
-              <div className="border-t border-[#E5E5E5] pt-4">
-                <label className="block text-xs text-[#666666] mb-2">或者输入自定义润色要求：</label>
+              <div className="border-t border-border-light pt-4">
+                <label className="block text-xs text-text-sub mb-2">或者输入自定义润色要求：</label>
                 <textarea
                   value={customPolishPrompt}
                   onChange={(e) => {
@@ -509,22 +524,22 @@ const App: React.FC = () => {
                     if (e.target.value) setSelectedPolishStyle(null);
                   }}
                   placeholder="例如：让文章更有幽默感，增加一些网络流行语..."
-                  className="w-full h-20 px-3 py-2 text-sm border border-[#E5E5E5] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1677FF]/20 focus:border-[#1677FF] transition-all"
+                  className="w-full h-20 px-3 py-2 text-sm border border-border-light rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-[#E5E5E5] bg-[#FAFAFA] flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-border-light bg-bg-app flex justify-end gap-3">
               <button
                 onClick={() => setShowPolishModal(false)}
-                className="px-4 py-2 text-sm text-[#666666] hover:text-[#333333] transition-colors"
+                className="px-4 py-2 text-sm text-text-sub hover:text-text-main transition-colors"
               >
                 取消
               </button>
               <button
                 onClick={handlePolishConfirm}
-                className="px-5 py-2 bg-[#1677FF] hover:bg-[#0958D9] text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow flex items-center gap-1.5"
+                className="px-5 py-2 bg-brand hover:bg-brand-hover text-white rounded-lg text-sm font-medium transition-all shadow-elevation-1 hover:shadow-elevation-2 flex items-center gap-1.5"
               >
                 开始润色
                 <ChevronRight size={14} />
@@ -536,17 +551,17 @@ const App: React.FC = () => {
 
       {/* Settings Modal */}
       {showSettingsModal && (
-        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]">
-          <div className="bg-white rounded-xl shadow-2xl ring-1 ring-black/5 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-text-main/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]">
+          <div className="bg-bg-panel rounded-xl shadow-elevation-3 ring-1 ring-border-light w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center">
-              <h3 className="font-medium text-[#333333] flex items-center gap-2">
-                <Settings size={16} className="text-[#999999]" />
+            <div className="px-6 py-4 border-b border-border-light flex justify-between items-center">
+              <h3 className="font-medium text-text-main flex items-center gap-2">
+                <Settings size={16} className="text-text-sub" />
                 设置
               </h3>
               <button
                 onClick={() => setShowSettingsModal(false)}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#333333] hover:bg-[#F5F5F5] transition-all"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-text-sub hover:text-text-main hover:bg-bg-hover transition-all"
               >
                 <X size={16} />
               </button>
@@ -561,42 +576,42 @@ const App: React.FC = () => {
 
       {/* AI Modal (Global) */}
       {showAiModal && (
-        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px] transition-opacity">
-          <div className="bg-white rounded-xl shadow-2xl ring-1 ring-black/5 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center">
-              <h3 className="font-medium text-[#333333] flex items-center gap-2">
-                {aiModalTitle.includes('格式') ? <Wrench size={16} className="text-[#999999]" /> : <Sparkles size={16} className="text-[#999999]" />}
+        <div className="fixed inset-0 bg-text-main/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px] transition-opacity">
+          <div className="bg-bg-panel rounded-xl shadow-elevation-3 ring-1 ring-border-light w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-border-light flex justify-between items-center">
+              <h3 className="font-medium text-text-main flex items-center gap-2">
+                {aiModalTitle.includes('格式') ? <Wrench size={16} className="text-text-sub" /> : <Sparkles size={16} className="text-text-sub" />}
                 {aiModalTitle}
               </h3>
-              <button onClick={() => setShowAiModal(false)} className="text-[#999999] hover:text-[#333333] transition-colors text-xl">
+              <button onClick={() => setShowAiModal(false)} className="text-text-sub hover:text-text-main transition-colors text-xl">
                 &times;
               </button>
             </div>
 
             <div className="p-8 overflow-y-auto flex-1 min-h-[300px]">
               {isAiLoading ? (
-                <div className="flex flex-col items-center justify-center h-full gap-4 text-[#999999]">
-                  <Loader2 size={32} className="animate-spin text-[#1677FF]" strokeWidth={1.5} />
-                  <p className="font-light text-sm tracking-wide">AI PROCESSING...</p>
+                <div className="flex flex-col items-center justify-center h-full gap-4 text-text-sub">
+                  <Loader2 size={32} className="animate-spin text-brand" strokeWidth={1.5} />
+                  <p className="font-light text-sm tracking-wide">AI 处理中...</p>
                 </div>
               ) : (
-                <div className="prose prose-stone max-w-none text-[#666666] whitespace-pre-wrap leading-loose font-light">
+                <div className="prose prose-stone max-w-none text-text-sub whitespace-pre-wrap leading-loose font-light">
                   {aiResult}
                 </div>
               )}
             </div>
 
-            <div className="p-6 border-t border-[#E5E5E5] bg-[#F5F5F5]/50 flex justify-end gap-4">
+            <div className="p-6 border-t border-border-light bg-bg-app flex justify-end gap-4">
               <button
                 onClick={() => setShowAiModal(false)}
-                className="px-4 py-2 text-[#666666] hover:text-[#333333] text-sm font-medium transition-colors"
+                className="px-4 py-2 text-text-sub hover:text-text-main text-sm font-medium transition-colors"
               >
                 取消
               </button>
               {!isAiLoading && aiResult && (
                 <button
                   onClick={applyAiContent}
-                  className="px-6 py-2 bg-[#1677FF] hover:bg-[#0958D9] text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+                  className="px-6 py-2 bg-brand hover:bg-brand-hover text-white rounded-lg text-sm font-medium transition-all shadow-elevation-1 hover:shadow-elevation-2"
                 >
                   应用更改
                 </button>

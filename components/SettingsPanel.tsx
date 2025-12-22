@@ -44,8 +44,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
   return (
     <div className="h-full overflow-y-auto p-6 no-scrollbar">
       <header className="mb-8">
-        <h2 className="text-lg font-medium text-gray-900 mb-1">AI 设置</h2>
-        <p className="text-sm text-gray-500 font-light">配置 OpenAI 兼容的 API</p>
+        <h2 className="text-lg font-medium text-text-main mb-1">AI 设置</h2>
+        <p className="text-sm text-text-sub font-light">配置 OpenAI 兼容的 API</p>
       </header>
 
       {/* Status Indicator */}
@@ -72,8 +72,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
       <div className="space-y-6">
         {/* API Key */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <Key size={14} className="text-gray-400" />
+          <label className="flex items-center gap-2 text-sm font-medium text-text-main mb-2">
+            <Key size={14} className="text-text-sub" />
             API Key
           </label>
           <div className="relative">
@@ -83,28 +83,29 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
               onChange={(e) => handleChange('apiKey', e.target.value)}
               placeholder="sk-..."
               className="
-                w-full px-3 py-2.5 pr-10 rounded-lg border border-gray-200 text-sm
-                focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300
-                placeholder:text-gray-400 transition-all
+                w-full px-3 py-2.5 pr-10 rounded-lg border border-border-light text-sm text-text-main
+                focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand
+                placeholder:text-text-sub transition-all
+                bg-bg-panel
               "
             />
             <button
               type="button"
               onClick={() => setShowApiKey(!showApiKey)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-sub hover:text-text-main"
             >
               {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          <p className="mt-1.5 text-xs text-gray-400">
+          <p className="mt-1.5 text-xs text-text-sub">
             密钥仅保存在本地浏览器，不会上传到任何服务器
           </p>
         </div>
 
         {/* API URL */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <Globe size={14} className="text-gray-400" />
+          <label className="flex items-center gap-2 text-sm font-medium text-text-main mb-2">
+            <Globe size={14} className="text-text-sub" />
             API 端点
           </label>
           <input
@@ -113,9 +114,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
             onChange={(e) => handleChange('apiUrl', e.target.value)}
             placeholder="https://api.openai.com/v1"
             className="
-              w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm
-              focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300
-              placeholder:text-gray-400 transition-all
+              w-full px-3 py-2.5 rounded-lg border border-border-light text-sm text-text-main
+              focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand
+              placeholder:text-text-sub transition-all
+              bg-bg-panel
             "
           />
           {/* Preset Endpoints */}
@@ -127,8 +129,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
                 className={`
                   px-2 py-1 text-xs rounded-md transition-all
                   ${config.apiUrl === preset.url
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-text-main text-white'
+                    : 'bg-bg-hover text-text-sub hover:bg-border-light'
                   }
                 `}
               >
@@ -140,8 +142,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
 
         {/* Model */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <Cpu size={14} className="text-gray-400" />
+          <label className="flex items-center gap-2 text-sm font-medium text-text-main mb-2">
+            <Cpu size={14} className="text-text-sub" />
             模型
           </label>
           <input
@@ -150,12 +152,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
             onChange={(e) => handleChange('model', e.target.value)}
             placeholder="输入模型 ID，如 gpt-4o-mini"
             className="
-              w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm
-              focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300
-              placeholder:text-gray-400 transition-all
+              w-full px-3 py-2.5 rounded-lg border border-border-light text-sm text-text-main
+              focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand
+              placeholder:text-text-sub transition-all
+              bg-bg-panel
             "
           />
-          <p className="mt-1.5 text-xs text-gray-400">
+          <p className="mt-1.5 text-xs text-text-sub">
             请从服务商官网获取正确的模型 ID
           </p>
         </div>
@@ -167,7 +170,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
             w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-300
             ${saved
               ? 'bg-emerald-500 text-white'
-              : 'bg-gray-900 text-white hover:bg-gray-800'
+              : 'bg-brand text-white hover:bg-brand-hover shadow-elevation-1 hover:shadow-elevation-2'
             }
           `}
         >
@@ -183,8 +186,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onConfigChange }) => {
       </div>
 
       {/* Footer */}
-      <div className="mt-8 pt-4 border-t border-gray-100">
-        <p className="text-xs text-gray-400 leading-relaxed font-light">
+      <div className="mt-8 pt-4 border-t border-border-light">
+        <p className="text-xs text-text-sub leading-relaxed font-light">
           支持所有 OpenAI 兼容的 API，包括 OpenRouter、DeepSeek、Moonshot、通义千问、智谱 GLM 等。
         </p>
       </div>

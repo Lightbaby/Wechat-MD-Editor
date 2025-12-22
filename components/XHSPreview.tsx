@@ -204,23 +204,23 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
 
   // Markdown 渲染组件
   const components = useMemo(() => ({
-    h1: ({ children }: any) => <h1 style={titleStyle}>{children}</h1>,
+    h1: ({ children }: any) => <h1 style={titleStyle} className="xhs-heading">{children}</h1>,
     h2: ({ children }: any) => (
-      <h2 style={{
+      <h2 className="xhs-heading" style={{
         ...template.styles.heading,
         fontSize: `calc(${titleFontSizes.title} * 0.85)`,
         borderColor: colorVariant.accent || colorVariant.primary,
       }}>{children}</h2>
     ),
     h3: ({ children }: any) => (
-      <h3 style={{
+      <h3 className="xhs-heading" style={{
         ...template.styles.heading,
         fontSize: `calc(${titleFontSizes.title} * 0.75)`,
         borderColor: colorVariant.accent || colorVariant.primary,
       }}>{children}</h3>
     ),
     h4: ({ children }: any) => (
-      <h4 style={{
+      <h4 className="xhs-heading" style={{
         ...template.styles.heading,
         fontSize: `calc(${titleFontSizes.title} * 0.65)`,
         marginTop: '20px',
@@ -229,7 +229,7 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
       }}>{children}</h4>
     ),
     h5: ({ children }: any) => (
-      <h5 style={{
+      <h5 className="xhs-heading" style={{
         ...template.styles.heading,
         fontSize: `calc(${titleFontSizes.title} * 0.55)`,
         marginTop: '16px',
@@ -238,7 +238,7 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
       }}>{children}</h5>
     ),
     h6: ({ children }: any) => (
-      <h6 style={{
+      <h6 className="xhs-heading" style={{
         ...template.styles.heading,
         fontSize: `calc(${titleFontSizes.title} * 0.5)`,
         marginTop: '16px',
@@ -278,9 +278,15 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
     a: ({ children, href }: any) => (
       <a href={href} style={{ ...template.styles.link, color: colorVariant.accent || colorVariant.primary }}>{children}</a>
     ),
-    strong: ({ children }: any) => (
-      <strong style={{ ...template.styles.strong, color: colorVariant.primary }}>{children}</strong>
-    ),
+    strong: ({ children }: any) => {
+      // 跃动黑底等深色模板：正文加粗使用白色(colorVariant.primary)
+      // 其他模板：使用模板定义的 strong 样式
+      const isDarkTemplate = template.id === 'dynamic';
+      const strongStyle = isDarkTemplate
+        ? { ...template.styles.strong, color: colorVariant.primary }
+        : template.styles.strong;
+      return <strong style={strongStyle}>{children}</strong>;
+    },
     hr: () => (
       <hr style={{ ...template.styles.divider, border: 'none', backgroundColor: colorVariant.accent || colorVariant.secondary || colorVariant.primary, opacity: 0.2 }} />
     ),
@@ -400,6 +406,18 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
 
   return (
     <>
+      {/* 标题内 strong 样式重置 */}
+      <style>{`
+        .xhs-heading strong {
+          color: inherit !important;
+          background: none !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+        }
+      `}</style>
+
       {/* 隐藏的测量容器 */}
       <div
         ref={measureContainerRef}
@@ -430,21 +448,6 @@ const XHSPreview = forwardRef<HTMLDivElement, XHSPreviewProps>(({
                 </ReactMarkdown>
               </div>
 
-              {/* 页码指示器 */}
-              {pages.length > 1 && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: '12px',
-                  right: '16px',
-                  fontSize: '11px',
-                  opacity: 0.4,
-                  fontWeight: 600,
-                  pointerEvents: 'none',
-                  fontFamily: 'sans-serif'
-                }}>
-                  {pageIndex + 1} / {pages.length}
-                </div>
-              )}
             </div>
           </div>
         ))}

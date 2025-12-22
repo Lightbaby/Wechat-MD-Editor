@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WeChat MD Editor</title>
+    <title>MD 排版神器 - 微信公众号 & 小红书图文排版工具</title>
+    <meta name="description" content="一款优雅的 Markdown 排版工具，支持微信公众号、小红书等多平台。内置 30+ 精美模板，AI 辅助写作，一键复制，让排版变得简单。" />
+    <meta name="keywords" content="Markdown编辑器,微信公众号排版,小红书排版,排版工具,AI写作,公众号编辑器,图文排版" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,13 +13,14 @@
         theme: {
           extend: {
             colors: {
-              'bg-base': '#F5F5F5',
-              'content': '#FFFFFF',
-              'text-primary': '#333333',
-              'text-secondary': '#999999',
-              'border': '#E5E5E5',
-              'accent': '#1677FF',
-              'accent-hover': '#0958D9',
+              'bg-app': '#FAFAFA',
+              'bg-panel': '#FFFFFF',
+              'bg-hover': '#F4F4F5',
+              'text-main': '#18181B',
+              'text-sub': '#71717A',
+              'border-light': '#E4E4E7',
+              'brand': '#1677FF',
+              'brand-hover': '#0958D9',
               'xhs-red': '#FF2442',
               'xhs-red-hover': '#E01F3D',
             },
@@ -30,16 +33,21 @@
               '2xl': '48px',
             },
             borderRadius: {
-              'btn': '6px',
-              'input': '4px',
-              'card': '8px',
-              'modal': '12px',
+              'sm': '6px',
+              'md': '10px',
+              'lg': '16px',
+              'full': '9999px',
             },
             boxShadow: {
-              'sm': '0 1px 2px rgba(0,0,0,0.05)',
-              'md': '0 4px 12px rgba(0,0,0,0.08)',
-              'lg': '0 8px 24px rgba(0,0,0,0.12)',
+              'elevation-1': '0 2px 8px -2px rgba(0, 0, 0, 0.05)',
+              'elevation-2': '0 8px 24px -4px rgba(0, 0, 0, 0.08)',
+              'elevation-3': '0 12px 32px -6px rgba(0, 0, 0, 0.12)',
             },
+            fontFamily: {
+              sans: ['"Inter"', '"Noto Sans SC"', 'sans-serif'],
+              serif: ['"Noto Serif SC"', 'serif'],
+              mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+            }
           },
         },
       }
@@ -78,7 +86,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-[#F5F5F5] h-screen overflow-hidden text-[#333333]">
+  <body class="bg-bg-app h-screen overflow-hidden text-text-main antialiased selection:bg-brand/10 selection:text-brand">
     <div id="root" class="h-full"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

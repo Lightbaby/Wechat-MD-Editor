@@ -35,14 +35,14 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
   return (
     <div className="h-full flex flex-col">
       <header className="p-6 pb-4 flex-shrink-0">
-        <h2 className="text-lg font-medium text-[#333333] mb-1">调整</h2>
-        <p className="text-sm text-[#999999] font-light">精细调节排版参数</p>
+        <h2 className="text-lg font-medium text-text-main mb-1">调整</h2>
+        <p className="text-sm text-text-sub font-light">精细调节排版参数</p>
       </header>
 
       <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6">
         {/* 卡片比例 */}
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-3">卡片比例</label>
+          <label className="block text-sm font-medium text-text-main mb-3">卡片比例</label>
           <div className="grid grid-cols-4 gap-2">
             {ASPECT_RATIO_OPTIONS.map((option) => (
               <button
@@ -51,8 +51,8 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
                 className={`
                   py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200
                   ${config.aspectRatio === option.value
-                    ? 'bg-[#1677FF] text-white'
-                    : 'bg-[#F5F5F5] text-[#666666] hover:bg-[#E5E5E5]'
+                    ? 'bg-brand text-white'
+                    : 'bg-bg-hover text-text-sub hover:bg-border-light'
                   }
                 `}
               >
@@ -64,7 +64,7 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
 
         {/* 标题字号 */}
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-3">标题字号</label>
+          <label className="block text-sm font-medium text-text-main mb-3">标题字号</label>
           <div className="grid grid-cols-5 gap-2">
             {FONT_SIZE_OPTIONS.map((option) => (
               <button
@@ -73,8 +73,8 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
                 className={`
                   py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200
                   ${config.titleFontSize === option.value
-                    ? 'bg-[#1677FF] text-white'
-                    : 'bg-[#F5F5F5] text-[#666666] hover:bg-[#E5E5E5]'
+                    ? 'bg-brand text-white'
+                    : 'bg-bg-hover text-text-sub hover:bg-border-light'
                   }
                 `}
               >
@@ -86,7 +86,7 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
 
         {/* 正文字号 */}
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-3">正文字号</label>
+          <label className="block text-sm font-medium text-text-main mb-3">正文字号</label>
           <div className="grid grid-cols-5 gap-2">
             {FONT_SIZE_OPTIONS.map((option) => (
               <button
@@ -95,8 +95,8 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
                 className={`
                   py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200
                   ${config.bodyFontSize === option.value
-                    ? 'bg-[#1677FF] text-white'
-                    : 'bg-[#F5F5F5] text-[#666666] hover:bg-[#E5E5E5]'
+                    ? 'bg-brand text-white'
+                    : 'bg-bg-hover text-text-sub hover:bg-border-light'
                   }
                 `}
               >
@@ -108,7 +108,7 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
 
         {/* 对齐方式 */}
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-3">对齐方式</label>
+          <label className="block text-sm font-medium text-text-main mb-3">对齐方式</label>
           <div className="flex gap-2">
             {TEXT_ALIGN_OPTIONS.map((option) => (
               <button
@@ -117,8 +117,8 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
                 className={`
                   flex-1 py-2 rounded-lg flex items-center justify-center transition-all duration-200
                   ${config.textAlign === option.value
-                    ? 'bg-[#1677FF] text-white'
-                    : 'bg-[#F5F5F5] text-[#666666] hover:bg-[#E5E5E5]'
+                    ? 'bg-brand text-white'
+                    : 'bg-bg-hover text-text-sub hover:bg-border-light'
                   }
                 `}
               >
@@ -131,8 +131,8 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
         {/* 行高 */}
         <div>
           <div className="flex justify-between items-center mb-3">
-            <label className="text-sm font-medium text-[#333333]">行高</label>
-            <span className="text-sm text-[#999999]">{config.lineHeight.toFixed(1)}</span>
+            <label className="text-sm font-medium text-text-main">行高</label>
+            <span className="text-sm text-text-sub">{config.lineHeight.toFixed(1)}</span>
           </div>
           <input
             type="range"
@@ -141,9 +141,9 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
             step="0.1"
             value={config.lineHeight}
             onChange={(e) => onConfigChange({ lineHeight: parseFloat(e.target.value) })}
-            className="w-full h-2 bg-[#E5E5E5] rounded-lg appearance-none cursor-pointer accent-[#1677FF]"
+            className="w-full h-2 bg-border-light rounded-lg appearance-none cursor-pointer accent-brand"
           />
-          <div className="flex justify-between text-xs text-[#999999] mt-1">
+          <div className="flex justify-between text-xs text-text-sub mt-1">
             <span>紧凑</span>
             <span>宽松</span>
           </div>
@@ -152,8 +152,8 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
         {/* 字间距 */}
         <div>
           <div className="flex justify-between items-center mb-3">
-            <label className="text-sm font-medium text-[#333333]">字间距</label>
-            <span className="text-sm text-[#999999]">{config.letterSpacing.toFixed(1)}px</span>
+            <label className="text-sm font-medium text-text-main">字间距</label>
+            <span className="text-sm text-text-sub">{config.letterSpacing.toFixed(1)}px</span>
           </div>
           <input
             type="range"
@@ -162,9 +162,9 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
             step="0.1"
             value={config.letterSpacing}
             onChange={(e) => onConfigChange({ letterSpacing: parseFloat(e.target.value) })}
-            className="w-full h-2 bg-[#E5E5E5] rounded-lg appearance-none cursor-pointer accent-[#1677FF]"
+            className="w-full h-2 bg-border-light rounded-lg appearance-none cursor-pointer accent-brand"
           />
-          <div className="flex justify-between text-xs text-[#999999] mt-1">
+          <div className="flex justify-between text-xs text-text-sub mt-1">
             <span>标准</span>
             <span>宽松</span>
           </div>
@@ -173,8 +173,8 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
         {/* 内边距 */}
         <div>
           <div className="flex justify-between items-center mb-3">
-            <label className="text-sm font-medium text-[#333333]">内边距</label>
-            <span className="text-sm text-[#999999]">{config.padding}px</span>
+            <label className="text-sm font-medium text-text-main">内边距</label>
+            <span className="text-sm text-text-sub">{config.padding}px</span>
           </div>
           <input
             type="range"
@@ -183,9 +183,9 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
             step="4"
             value={config.padding}
             onChange={(e) => onConfigChange({ padding: parseInt(e.target.value) })}
-            className="w-full h-2 bg-[#E5E5E5] rounded-lg appearance-none cursor-pointer accent-[#1677FF]"
+            className="w-full h-2 bg-border-light rounded-lg appearance-none cursor-pointer accent-brand"
           />
-          <div className="flex justify-between text-xs text-[#999999] mt-1">
+          <div className="flex justify-between text-xs text-text-sub mt-1">
             <span>紧凑</span>
             <span>宽松</span>
           </div>
@@ -202,7 +202,7 @@ const XHSAdjustPanel: React.FC<XHSAdjustPanelProps> = ({
             letterSpacing: 0.5,
             padding: 24,
           })}
-          className="w-full py-2 text-sm text-[#999999] hover:text-[#666666] transition-colors"
+          className="w-full py-2 text-sm text-text-sub hover:text-text-main transition-colors"
         >
           恢复默认设置
         </button>

@@ -12,8 +12,8 @@ const ThemePanel: React.FC<ThemePanelProps> = ({ themes, currentTheme, onSelectT
   return (
     <div className="h-full overflow-y-auto p-6 no-scrollbar">
       <header className="mb-8">
-        <h2 className="text-lg font-medium text-[#333333] mb-1">主题库</h2>
-        <p className="text-sm text-[#999999] font-light">选择一种风格以开始</p>
+        <h2 className="text-lg font-medium text-text-main mb-1">主题库</h2>
+        <p className="text-sm text-text-sub font-light">选择一种风格以开始</p>
       </header>
 
       <div className="grid grid-cols-1 gap-3">
@@ -23,10 +23,10 @@ const ThemePanel: React.FC<ThemePanelProps> = ({ themes, currentTheme, onSelectT
             onClick={() => onSelectTheme(theme)}
             className={`
               relative group flex items-center justify-between p-3 rounded-lg transition-all duration-200
-              border hover:border-[#CCCCCC]
+              border hover:border-brand/30 hover:bg-bg-hover
               ${currentTheme.id === theme.id
-                ? 'bg-[#F5F5F5] border-[#E5E5E5] ring-1 ring-[#1677FF]'
-                : 'bg-white border-[#E5E5E5]'
+                ? 'bg-brand/5 border-brand ring-1 ring-brand'
+                : 'bg-bg-panel border-border-light'
               }
             `}
           >
@@ -38,13 +38,13 @@ const ThemePanel: React.FC<ThemePanelProps> = ({ themes, currentTheme, onSelectT
                 <div className="w-6 h-6 rounded-full border-2 border-white shadow-sm" style={{ backgroundColor: theme.colors.heading }} />
               </div>
 
-              <span className={`text-sm font-medium ${currentTheme.id === theme.id ? 'text-[#333333]' : 'text-[#666666] group-hover:text-[#333333]'}`}>
+              <span className={`text-sm font-medium ${currentTheme.id === theme.id ? 'text-brand' : 'text-text-sub group-hover:text-text-main'}`}>
                 {theme.name}
               </span>
             </div>
 
             {currentTheme.id === theme.id && (
-              <div className="text-[#1677FF]">
+              <div className="text-brand">
                 <Check size={14} strokeWidth={2} />
               </div>
             )}

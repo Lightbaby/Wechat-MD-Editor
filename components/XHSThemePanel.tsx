@@ -44,18 +44,18 @@ const XHSThemePanel: React.FC<XHSThemePanelProps> = ({
   return (
     <div className="h-full flex flex-col">
       {/* 吸顶区域：标题 + 颜色选择 */}
-      <div className="flex-shrink-0 bg-white sticky top-0 z-10 border-b border-[#E5E5E5]">
+      <div className="flex-shrink-0 bg-bg-panel sticky top-0 z-10 border-b border-border-light">
         <header className="px-6 pt-4 pb-2">
-          <h2 className="text-lg font-medium text-[#333333] mb-0.5">模板库</h2>
-          <p className="text-xs text-[#999999] font-light">选择适合的小红书风格模板</p>
+          <h2 className="text-lg font-medium text-text-main mb-0.5">模板库</h2>
+          <p className="text-xs text-text-sub font-light">选择适合的小红书风格模板</p>
         </header>
 
         {/* 当前模板颜色变体选择 - 吸顶 */}
         <div className="px-6 pb-4">
-          <div className="p-3 bg-[#F5F5F5] rounded-lg">
+          <div className="p-3 bg-bg-hover rounded-lg">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-[#333333]">{currentTemplate.name}</span>
-              <span className="text-[10px] text-[#999999]">{currentTemplate.colorVariants.length} 种配色</span>
+              <span className="text-sm font-medium text-text-main">{currentTemplate.name}</span>
+              <span className="text-[10px] text-text-sub">{currentTemplate.colorVariants.length} 种配色</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {currentTemplate.colorVariants.map((variant) => (
@@ -65,7 +65,7 @@ const XHSThemePanel: React.FC<XHSThemePanelProps> = ({
                   className={`
                     relative w-7 h-7 rounded-full transition-all duration-200 border-2
                     ${config.colorVariantId === variant.id
-                      ? 'border-[#1677FF] scale-110'
+                      ? 'border-brand scale-110'
                       : 'border-transparent hover:scale-105'
                     }
                   `}
@@ -96,7 +96,7 @@ const XHSThemePanel: React.FC<XHSThemePanelProps> = ({
         {/* 分类展示模板 */}
         {Object.entries(groupedTemplates).map(([category, templates]) => (
           <div key={category} className="mb-6">
-            <h3 className="text-xs font-medium text-[#999999] uppercase tracking-wider mb-3">
+            <h3 className="text-xs font-medium text-text-sub uppercase tracking-wider mb-3">
               {CATEGORY_LABELS[category] || category}
             </h3>
             <div className="grid grid-cols-2 gap-3">
@@ -114,8 +114,8 @@ const XHSThemePanel: React.FC<XHSThemePanelProps> = ({
                     className={`
                       relative group rounded-lg overflow-hidden transition-all duration-200
                       ${isSelected
-                        ? 'ring-2 ring-[#1677FF] ring-offset-2'
-                        : 'hover:shadow-md'
+                        ? 'ring-2 ring-brand ring-offset-2'
+                        : 'hover:shadow-elevation-1'
                       }
                     `}
                   >
@@ -153,7 +153,7 @@ const XHSThemePanel: React.FC<XHSThemePanelProps> = ({
 
                     {/* 选中标记 */}
                     {isSelected && (
-                      <div className="absolute top-2 right-2 w-5 h-5 bg-[#1677FF] rounded-full flex items-center justify-center">
+                      <div className="absolute top-2 right-2 w-5 h-5 bg-brand rounded-full flex items-center justify-center">
                         <Check size={12} className="text-white" />
                       </div>
                     )}
