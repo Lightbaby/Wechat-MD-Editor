@@ -1,0 +1,116 @@
+import { XHSTemplate } from '../../types';
+import { SANS_FONT, baseStyles } from './base';
+
+/**
+ * 酷炫卡片 - 干货风格
+ * 特点：渐变卡片头、圆角设计、知识分享感
+ */
+export const cardTemplate: XHSTemplate = {
+  id: 'card',
+  name: '酷炫卡片',
+  category: 'modern',
+  description: '知识干货风，卡片式排版',
+  colorVariants: [
+    { id: 'indigo', name: '靛蓝', primary: '#1f2937', secondary: '#6366f1', background: '#f3f4f6', accent: '#6366f1' },
+    { id: 'emerald', name: '翡翠', primary: '#1f2937', secondary: '#10b981', background: '#f0fdf4', accent: '#10b981' },
+    { id: 'rose', name: '玫瑰', primary: '#1f2937', secondary: '#f43f5e', background: '#fff1f2', accent: '#f43f5e' },
+  ],
+  styles: {
+    container: {
+      backgroundColor: '#f3f4f6',
+      padding: '32px 20px',
+      fontFamily: SANS_FONT,
+    },
+    title: {
+      ...baseStyles.title,
+      fontSize: '20px',
+      fontWeight: 700,
+      color: '#fff',
+      background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+      padding: '16px 20px',
+      borderRadius: '12px',
+      boxShadow: '0 10px 25px -5px rgba(99, 102, 241, 0.25)',
+      marginBottom: '24px',
+      marginLeft: '4px',
+      marginRight: '4px',
+    },
+    body: {
+      ...baseStyles.body,
+      fontSize: '15px',
+      lineHeight: 1.9,
+      color: '#4b5563',
+      backgroundColor: '#fff',
+      padding: '16px 18px',
+      borderRadius: '12px',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+      marginBottom: '12px',
+      marginLeft: '4px',
+      marginRight: '4px',
+    },
+    heading: {
+      ...baseStyles.heading,
+      fontSize: '17px',
+      fontWeight: 700,
+      color: '#1f2937',
+      borderLeft: '8px solid #6366f1',
+      paddingLeft: '16px',
+      backgroundColor: '#fff',
+      padding: '14px 16px 14px 20px',
+      borderRadius: '0 8px 8px 0',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+      marginTop: '20px',
+      marginBottom: '16px',
+      marginLeft: '4px',
+      marginRight: '4px',
+    },
+    list: {
+      ...baseStyles.list,
+      listStyleType: 'none',
+      paddingLeft: '4px',
+      backgroundColor: '#fff',
+      padding: '16px 18px',
+      borderRadius: '12px',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+      marginLeft: '4px',
+      marginRight: '4px',
+    },
+    listItem: {
+      ...baseStyles.listItem,
+      paddingLeft: '28px',
+      position: 'relative',
+      marginBottom: '10px',
+      color: '#4b5563',
+    },
+    blockquote: {
+      ...baseStyles.blockquote,
+      background: 'linear-gradient(135deg, #eef2ff 0%, #e0f2fe 100%)',
+      border: 'none',
+      borderRadius: '12px',
+      color: '#4338ca',
+      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.03)',
+      padding: '20px',
+      marginLeft: '4px',
+      marginRight: '4px',
+    },
+    code: {
+      ...baseStyles.code,
+      backgroundColor: '#eef2ff',
+      color: '#6366f1',
+    },
+    link: {
+      ...baseStyles.link,
+      color: '#6366f1',
+    },
+    strong: {
+      fontWeight: 700,
+      color: '#6366f1',
+    },
+    divider: {
+      ...baseStyles.divider,
+      borderTop: '1px solid #e5e7eb',
+      backgroundColor: 'transparent',
+      height: 0,
+      margin: '24px 8px',
+    },
+  },
+};
