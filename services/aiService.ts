@@ -16,6 +16,53 @@ import { AIConfig, loadAIConfig, isAIConfigured } from '../types';
 
 export type AIActionType = 'polish' | 'title' | 'summary' | 'grammar' | 'fix-markdown';
 
+// 润色方向预设
+export interface PolishStyle {
+  id: string;
+  name: string;
+  description: string;
+  prompt: string;
+}
+
+export const POLISH_STYLES: PolishStyle[] = [
+  {
+    id: 'professional',
+    name: '专业严谨',
+    description: '适合技术文章、行业报告',
+    prompt: '请将文章润色得更加专业、严谨，使用准确的术语和规范的表达，适合发布在技术博客或行业媒体上。'
+  },
+  {
+    id: 'casual',
+    name: '轻松活泼',
+    description: '适合生活分享、日常随笔',
+    prompt: '请将文章润色得轻松活泼，语气亲切自然，像在和朋友聊天一样，适合生活类公众号。'
+  },
+  {
+    id: 'storytelling',
+    name: '故事感',
+    description: '增强叙事性和代入感',
+    prompt: '请增强文章的故事感和叙事性，让读者更有代入感，使用生动的描写和情节推进。'
+  },
+  {
+    id: 'concise',
+    name: '精简凝练',
+    description: '删繁就简，突出重点',
+    prompt: '请精简文章内容，删除冗余表达，突出核心观点，让文章更加简洁有力。'
+  },
+  {
+    id: 'emotional',
+    name: '情感共鸣',
+    description: '增加情感表达和共鸣',
+    prompt: '请增强文章的情感表达，让读者产生共鸣，可以适当使用感叹句和修辞手法。'
+  },
+  {
+    id: 'xiaohongshu',
+    name: '小红书风',
+    description: '适合小红书笔记风格',
+    prompt: '请将文章改写成小红书风格，使用emoji表情、分点列表、口语化表达，增加互动感和种草感。'
+  },
+];
+
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -29,9 +76,15 @@ interface ChatCompletionResponse {
   }[];
 }
 
-const getPrompt = (text: string, type: AIActionType): ChatMessage[] => {
+const getPrompt = (text: string, type: AIActionType, customPolishPrompt?: string): ChatMessage[] => {
+  const defaultPolishPrompt = '你是一个专业的微信公众号编辑。请润色用户提供的 Markdown 文本，使其语气更加自然、吸引人，更有阅读感。保持原有的 Markdown 格式（如标题层级、粗体等）不变。直接返回润色后的内容，不要包含任何解释。';
+
+  const polishPrompt = customPolishPrompt
+    ? `你是一个专业的微信公众号编辑。${customPolishPrompt} 保持原有的 Markdown 格式（如标题层级、粗体等）不变。直接返回润色后的内容，不要包含任何解释。`
+    : defaultPolishPrompt;
+
   const systemPrompts: Record<AIActionType, string> = {
-    'polish': '你是一个专业的微信公众号编辑。请润色用户提供的 Markdown 文本，使其语气更加自然、吸引人，更有阅读感。保持原有的 Markdown 格式（如标题层级、粗体等）不变。直接返回润色后的内容，不要包含任何解释。',
+    'polish': polishPrompt,
     'title': '你是一个爆款文案专家。请根据用户提供的文章内容，生成 5 个吸引人的微信公众号标题。请直接列出标题，每行一个，不要包含编号或其他内容。',
     'summary': '请为用户提供的文章生成一个简短的摘要（50-100字），适合用作微信公众号的"摘要"字段。直接返回摘要内容，不要包含任何解释。',
     'grammar': '请检查用户提供的文本的错别字和语法错误，并给出修正后的版本。如果没有错误，请原样返回。保持 Markdown 格式不变。直接返回修正后的内容，不要包含任何解释。',
@@ -63,18 +116,19 @@ const getPrompt = (text: string, type: AIActionType): ChatMessage[] => {
 };
 
 export const enhanceContent = async (
-  text: string, 
+  text: string,
   type: AIActionType,
-  config?: AIConfig
+  config?: AIConfig,
+  customPolishPrompt?: string
 ): Promise<string> => {
   // 使用传入的 config 或从 localStorage 加载
   const aiConfig = config || loadAIConfig();
-  
+
   if (!isAIConfigured(aiConfig)) {
     throw new Error('请先在设置中配置 API Key、API 端点和模型');
   }
 
-  const messages = getPrompt(text, type);
+  const messages = getPrompt(text, type, customPolishPrompt);
   
   // 构建 API URL
   let apiUrl = aiConfig.apiUrl;

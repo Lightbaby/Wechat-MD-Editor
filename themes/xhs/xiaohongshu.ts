@@ -14,6 +14,9 @@ export const xiaohongshuTemplate: XHSTemplate = {
     { id: 'red', name: '经典红', primary: '#ff2442', secondary: '#333', background: '#fffbfb', accent: '#ff2442' },
     { id: 'coral', name: '珊瑚橙', primary: '#ff6b6b', secondary: '#333', background: '#fff9f9', accent: '#ff6b6b' },
     { id: 'pink', name: '少女粉', primary: '#ff69b4', secondary: '#333', background: '#fff5f8', accent: '#ff69b4' },
+    { id: 'orange', name: '活力橙', primary: '#ff7849', secondary: '#333', background: '#fff8f5', accent: '#ff7849' },
+    { id: 'purple', name: '葡萄紫', primary: '#9b59b6', secondary: '#333', background: '#f9f5fc', accent: '#9b59b6' },
+    { id: 'blue', name: '天空蓝', primary: '#3498db', secondary: '#333', background: '#f5f9fc', accent: '#3498db' },
   ],
   styles: {
     container: {

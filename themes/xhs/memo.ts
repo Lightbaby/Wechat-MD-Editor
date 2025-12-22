@@ -14,6 +14,9 @@ export const memoTemplate: XHSTemplate = {
     { id: 'yellow', name: '经典黄', primary: '#333', secondary: '#4a4a4a', background: '#fbf8ef', accent: '#e6b800' },
     { id: 'pink', name: '樱花粉', primary: '#333', secondary: '#4a4a4a', background: '#fff5f5', accent: '#e91e63' },
     { id: 'blue', name: '天空蓝', primary: '#333', secondary: '#4a4a4a', background: '#f0f8ff', accent: '#2196f3' },
+    { id: 'green', name: '薄荷绿', primary: '#333', secondary: '#4a4a4a', background: '#f0fff4', accent: '#10b981' },
+    { id: 'purple', name: '香芋紫', primary: '#333', secondary: '#4a4a4a', background: '#faf5ff', accent: '#8b5cf6' },
+    { id: 'orange', name: '暖阳橙', primary: '#333', secondary: '#4a4a4a', background: '#fffbeb', accent: '#f97316' },
   ],
   styles: {
     container: {

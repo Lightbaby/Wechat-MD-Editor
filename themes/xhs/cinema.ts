@@ -14,6 +14,9 @@ export const cinemaTemplate: XHSTemplate = {
     { id: 'classic', name: '经典黑', primary: '#e5e5e5', secondary: '#facc15', background: '#080808', accent: '#facc15' },
     { id: 'warm', name: '暖光', primary: '#fef3c7', secondary: '#f59e0b', background: '#0c0a09', accent: '#f59e0b' },
     { id: 'cold', name: '冷调', primary: '#e0f2fe', secondary: '#38bdf8', background: '#0a0a0a', accent: '#38bdf8' },
+    { id: 'neon', name: '霓虹', primary: '#f0f0f0', secondary: '#ff6b9d', background: '#0d0d0d', accent: '#ff6b9d' },
+    { id: 'matrix', name: '骇客', primary: '#00ff00', secondary: '#00cc00', background: '#000000', accent: '#00ff00' },
+    { id: 'retro', name: '复古', primary: '#f5deb3', secondary: '#daa520', background: '#1a1a1a', accent: '#daa520' },
   ],
   styles: {
     container: {

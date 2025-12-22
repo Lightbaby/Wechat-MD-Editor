@@ -43,49 +43,55 @@ const XHSThemePanel: React.FC<XHSThemePanelProps> = ({
 
   return (
     <div className="h-full flex flex-col">
-      <header className="p-6 pb-4 flex-shrink-0">
-        <h2 className="text-lg font-medium text-[#333333] mb-1">模板库</h2>
-        <p className="text-sm text-[#999999] font-light">选择适合的小红书风格模板</p>
-      </header>
+      {/* 吸顶区域：标题 + 颜色选择 */}
+      <div className="flex-shrink-0 bg-white sticky top-0 z-10 border-b border-[#E5E5E5]">
+        <header className="px-6 pt-4 pb-2">
+          <h2 className="text-lg font-medium text-[#333333] mb-0.5">模板库</h2>
+          <p className="text-xs text-[#999999] font-light">选择适合的小红书风格模板</p>
+        </header>
 
-      <div className="flex-1 overflow-y-auto px-6 pb-6">
-        {/* 当前模板颜色变体选择 */}
-        <div className="mb-6 p-4 bg-[#F5F5F5] rounded-lg">
-          <div className="text-sm font-medium text-[#333333] mb-3">
-            {currentTemplate.name}
+        {/* 当前模板颜色变体选择 - 吸顶 */}
+        <div className="px-6 pb-4">
+          <div className="p-3 bg-[#F5F5F5] rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-[#333333]">{currentTemplate.name}</span>
+              <span className="text-[10px] text-[#999999]">{currentTemplate.colorVariants.length} 种配色</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {currentTemplate.colorVariants.map((variant) => (
+                <button
+                  key={variant.id}
+                  onClick={() => onSelectColorVariant(variant.id)}
+                  className={`
+                    relative w-7 h-7 rounded-full transition-all duration-200 border-2
+                    ${config.colorVariantId === variant.id
+                      ? 'border-[#1677FF] scale-110'
+                      : 'border-transparent hover:scale-105'
+                    }
+                  `}
+                  style={{
+                    background: variant.background.includes('gradient')
+                      ? variant.background
+                      : variant.background,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  }}
+                  title={variant.name}
+                >
+                  {config.colorVariantId === variant.id && (
+                    <Check
+                      size={12}
+                      className="absolute inset-0 m-auto"
+                      style={{ color: variant.primary }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {currentTemplate.colorVariants.map((variant) => (
-              <button
-                key={variant.id}
-                onClick={() => onSelectColorVariant(variant.id)}
-                className={`
-                  relative w-8 h-8 rounded-full transition-all duration-200 border-2
-                  ${config.colorVariantId === variant.id
-                    ? 'border-[#1677FF] scale-110'
-                    : 'border-transparent hover:scale-105'
-                  }
-                `}
-                style={{
-                  background: variant.background.includes('gradient')
-                    ? variant.background
-                    : variant.background,
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                }}
-                title={variant.name}
-              >
-                {config.colorVariantId === variant.id && (
-                  <Check
-                    size={14}
-                    className="absolute inset-0 m-auto"
-                    style={{ color: variant.primary }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-[#999999] mt-2">{currentTemplate.description}</p>
         </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-6 pb-6 pt-4">
 
         {/* 分类展示模板 */}
         {Object.entries(groupedTemplates).map(([category, templates]) => (

@@ -14,6 +14,9 @@ export const zenTemplate: XHSTemplate = {
     { id: 'white', name: '素白', primary: '#595959', secondary: '#2c2c2c', background: '#fdfdfd', accent: '#a4b0be' },
     { id: 'warm', name: '暖灰', primary: '#5d5d5d', secondary: '#3d3d3d', background: '#faf8f5', accent: '#b8a692' },
     { id: 'green', name: '茶青', primary: '#4a5d52', secondary: '#2f3d35', background: '#f7faf8', accent: '#7d9a8c' },
+    { id: 'ink', name: '墨韵', primary: '#2c3e50', secondary: '#1a252f', background: '#fafafa', accent: '#5d6d7e' },
+    { id: 'bamboo', name: '竹青', primary: '#3d5c4c', secondary: '#2a3f34', background: '#f8faf9', accent: '#6b8f71' },
+    { id: 'clay', name: '陶土', primary: '#8b6f5c', secondary: '#5c4a3d', background: '#faf9f7', accent: '#a08676' },
   ],
   styles: {
     container: {

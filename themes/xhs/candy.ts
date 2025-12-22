@@ -14,6 +14,9 @@ export const candyTemplate: XHSTemplate = {
     { id: 'pink-cyan', name: '粉青', primary: '#555', secondary: '#ff9a9e', background: 'linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%)', accent: '#ff9a9e' },
     { id: 'purple-pink', name: '紫粉', primary: '#555', secondary: '#a18cd1', background: 'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)', accent: '#a18cd1' },
     { id: 'peach', name: '蜜桃', primary: '#555', secondary: '#f8a5c2', background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', accent: '#f8a5c2' },
+    { id: 'sunset', name: '日落', primary: '#555', secondary: '#ff7e5f', background: 'linear-gradient(135deg, #feb47b 0%, #ff7e5f 100%)', accent: '#ff7e5f' },
+    { id: 'ocean', name: '海洋', primary: '#fff', secondary: '#43e97b', background: 'linear-gradient(135deg, #38f9d7 0%, #43e97b 100%)', accent: '#43e97b' },
+    { id: 'lavender', name: '薰衣草', primary: '#555', secondary: '#7f7fd5', background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)', accent: '#7f7fd5' },
   ],
   styles: {
     container: {

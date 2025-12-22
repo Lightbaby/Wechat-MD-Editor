@@ -12,7 +12,7 @@ import {
   DEFAULT_XHS_CONFIG,
 } from './types';
 import { XHS_TEMPLATES, DEFAULT_XHS_TEMPLATE } from './themes/xiaohongshu';
-import Editor from './components/Editor';
+// Editor is now inline in App.tsx for better AI action bar integration
 import Preview from './components/Preview';
 import ThemePanel from './components/ThemePanel';
 import SettingsPanel from './components/SettingsPanel';
@@ -21,7 +21,7 @@ import XHSPreview from './components/XHSPreview';
 import XHSPaginator from './components/XHSPaginator';
 import XHSThemePanel from './components/XHSThemePanel';
 import XHSAdjustPanel from './components/XHSAdjustPanel';
-import { enhanceContent } from './services/aiService';
+import { enhanceContent, POLISH_STYLES, PolishStyle } from './services/aiService';
 import {
   Sparkles,
   Copy,
@@ -33,18 +33,20 @@ import {
   Wand2,
   Type,
   Wrench,
-  AlertCircle,
   Settings,
   Monitor,
-  Smartphone
+  Smartphone,
+  X,
+  ChevronRight
 } from 'lucide-react';
 
-type RightPanelTab = 'design' | 'settings' | 'ai';
+// Settings modal state
+type SettingsModalState = boolean;
 
 const App: React.FC = () => {
   const [markdown, setMarkdown] = useState<string>(DEFAULT_MARKDOWN);
   const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]);
-  const [activeTab, setActiveTab] = useState<RightPanelTab>('design');
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   // Editor Mode State
@@ -62,6 +64,11 @@ const App: React.FC = () => {
   const [aiResult, setAiResult] = useState<string | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiModalTitle, setAiModalTitle] = useState("");
+
+  // Polish Style Modal State
+  const [showPolishModal, setShowPolishModal] = useState(false);
+  const [selectedPolishStyle, setSelectedPolishStyle] = useState<PolishStyle | null>(null);
+  const [customPolishPrompt, setCustomPolishPrompt] = useState("");
 
   // UI State
   const [xhsPanelTab, setXhsPanelTab] = useState<'templates' | 'adjust'>('templates');
@@ -159,10 +166,22 @@ const App: React.FC = () => {
 
   const handleAiAction = async (type: AIActionType) => {
     if (!aiConfigured) {
-      setActiveTab('settings');
+      setShowSettingsModal(true);
       return;
     }
 
+    // 如果是润色，先显示风格选择弹窗
+    if (type === 'polish') {
+      setShowPolishModal(true);
+      setSelectedPolishStyle(null);
+      setCustomPolishPrompt("");
+      return;
+    }
+
+    executeAiAction(type);
+  };
+
+  const executeAiAction = async (type: AIActionType, polishPrompt?: string) => {
     setIsAiLoading(true);
     setAiResult(null);
     setAiModalTitle(
@@ -175,7 +194,7 @@ const App: React.FC = () => {
     setShowAiModal(true);
 
     try {
-      const result = await enhanceContent(markdown, type, aiConfig);
+      const result = await enhanceContent(markdown, type, aiConfig, polishPrompt);
       setAiResult(result);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '未知错误';
@@ -183,6 +202,17 @@ const App: React.FC = () => {
     } finally {
       setIsAiLoading(false);
     }
+  };
+
+  const handlePolishConfirm = () => {
+    const prompt = selectedPolishStyle?.prompt || customPolishPrompt;
+    if (!prompt.trim()) {
+      // 如果没有选择风格也没有自定义，使用默认
+      executeAiAction('polish');
+    } else {
+      executeAiAction('polish', prompt);
+    }
+    setShowPolishModal(false);
   };
 
   const applyAiContent = () => {
@@ -196,131 +226,63 @@ const App: React.FC = () => {
     }
   };
 
-  // Render the Right Panel Content based on active tab
+  // Render the Right Panel Content (Design only)
   const renderRightPanel = () => {
-    switch (activeTab) {
-      case 'design':
-        if (editorMode === 'wechat') {
-          return (
-            <div className="h-full flex flex-col">
-              <ThemePanel
-                themes={THEMES}
-                currentTheme={currentTheme}
-                onSelectTheme={setCurrentTheme}
-              />
-            </div>
-          )
-        } else {
-          return (
-            <div className="h-full flex flex-col overflow-hidden">
-              {/* XHS Sub-tabs */}
-              <div className="px-4 py-3 flex gap-2 border-b border-[#E5E5E5] bg-[#FAFAFA]">
-                <button
-                  onClick={() => setXhsPanelTab('templates')}
-                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${xhsPanelTab === 'templates'
-                    ? 'bg-white text-[#333] shadow-sm ring-1 ring-black/5'
-                    : 'text-[#999] hover:bg-[#E5E5E5]/50'
-                    }`}
-                >
-                  模板选择
-                </button>
-                <button
-                  onClick={() => setXhsPanelTab('adjust')}
-                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${xhsPanelTab === 'adjust'
-                    ? 'bg-white text-[#333] shadow-sm ring-1 ring-black/5'
-                    : 'text-[#999] hover:bg-[#E5E5E5]/50'
-                    }`}
-                >
-                  精细调整
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto">
-                {xhsPanelTab === 'templates' ? (
-                  <XHSThemePanel
-                    currentTemplate={currentXHSTemplate}
-                    config={xhsConfig}
-                    onSelectTemplate={setCurrentXHSTemplate}
-                    onSelectColorVariant={(id) => handleXHSConfigChange({ colorVariantId: id })}
-                  />
-                ) : (
-                  <XHSAdjustPanel
-                    config={xhsConfig}
-                    onConfigChange={handleXHSConfigChange}
-                  />
-                )}
-              </div>
-            </div>
-          )
-        }
-      case 'settings':
-        return <SettingsPanel onConfigChange={handleAiConfigChange} />;
-      case 'ai':
-        return (
-          <div className="h-full p-6 flex flex-col">
-            <header className="mb-8">
-              <h2 className="text-lg font-medium text-[#333333] mb-1">智能助手</h2>
-              <p className="text-sm text-[#999999] font-light">AI 驱动的写作增强工具</p>
-            </header>
-
-            {/* Warning if not configured */}
-            {!aiConfigured && (
-              <div className="mb-6 p-3 rounded-lg bg-amber-50 border border-amber-100 flex items-start gap-3">
-                <AlertCircle size={16} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm text-amber-700">请先配置 AI 设置</p>
-                  <button
-                    onClick={() => setActiveTab('settings')}
-                    className="text-xs text-amber-600 hover:text-amber-800 underline mt-1"
-                  >
-                    前往设置 →
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="flex flex-col gap-1">
-              {[
-                { id: 'fix-markdown', icon: Wrench, title: '智能格式修复', desc: '修复 Markdown 语法错误' },
-                { id: 'polish', icon: Sparkles, title: '文章润色', desc: '优化语气与可读性' },
-                { id: 'title', icon: Type, title: '标题生成', desc: '生成 5 个吸引人的标题' },
-                { id: 'summary', icon: Wand2, title: '生成摘要', desc: '提炼核心内容' },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => handleAiAction(item.id as AIActionType)}
-                  disabled={!aiConfigured}
-                  className={`
-                      group flex items-center gap-4 p-3 rounded-lg transition-all duration-200
-                      text-left border border-transparent
-                      ${aiConfigured
-                      ? 'hover:bg-[#F5F5F5] hover:border-[#E5E5E5]'
-                      : 'opacity-50 cursor-not-allowed'
-                    }
-                    `}
-                >
-                  <div className={`transition-colors ${aiConfigured ? 'text-[#999999] group-hover:text-[#1677FF]' : 'text-[#CCCCCC]'}`}>
-                    <item.icon size={18} strokeWidth={1.5} />
-                  </div>
-                  <div>
-                    <div className={`text-sm font-medium ${aiConfigured ? 'text-[#666666] group-hover:text-[#333333]' : 'text-[#CCCCCC]'}`}>{item.title}</div>
-                    <div className={`text-xs font-light ${aiConfigured ? 'text-[#999999] group-hover:text-[#666666]' : 'text-[#CCCCCC]'}`}>{item.desc}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-auto border-t border-[#E5E5E5] pt-4">
-              <p className="text-xs text-[#999999] leading-relaxed font-light">
-                AI 生成内容仅供参考，请务必人工核对。
-              </p>
-            </div>
+    if (editorMode === 'wechat') {
+      return (
+        <div className="h-full flex flex-col">
+          <ThemePanel
+            themes={THEMES}
+            currentTheme={currentTheme}
+            onSelectTheme={setCurrentTheme}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className="h-full flex flex-col overflow-hidden">
+          {/* XHS Sub-tabs */}
+          <div className="px-4 py-3 flex gap-2 border-b border-[#E5E5E5] bg-[#FAFAFA]">
+            <button
+              onClick={() => setXhsPanelTab('templates')}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${xhsPanelTab === 'templates'
+                ? 'bg-white text-[#333] shadow-sm ring-1 ring-black/5'
+                : 'text-[#999] hover:bg-[#E5E5E5]/50'
+                }`}
+            >
+              模板选择
+            </button>
+            <button
+              onClick={() => setXhsPanelTab('adjust')}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${xhsPanelTab === 'adjust'
+                ? 'bg-white text-[#333] shadow-sm ring-1 ring-black/5'
+                : 'text-[#999] hover:bg-[#E5E5E5]/50'
+                }`}
+            >
+              精细调整
+            </button>
           </div>
-        );
-      default:
-        return null;
+
+          <div className="flex-1 overflow-y-auto">
+            {xhsPanelTab === 'templates' ? (
+              <XHSThemePanel
+                currentTemplate={currentXHSTemplate}
+                config={xhsConfig}
+                onSelectTemplate={setCurrentXHSTemplate}
+                onSelectColorVariant={(id) => handleXHSConfigChange({ colorVariantId: id })}
+              />
+            ) : (
+              <XHSAdjustPanel
+                config={xhsConfig}
+                onConfigChange={handleXHSConfigChange}
+              />
+            )}
+          </div>
+        </div>
+      );
     }
   };
+
 
   return (
     <div className="flex flex-col h-screen bg-white text-[#333333] overflow-hidden font-sans selection:bg-[#E5E5E5]">
@@ -339,7 +301,16 @@ const App: React.FC = () => {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Settings Button */}
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#666666] hover:bg-[#F5F5F5] hover:text-[#333333] transition-all"
+            title="设置"
+          >
+            <Settings size={18} strokeWidth={1.5} />
+          </button>
+
           {editorMode === 'wechat' ? (
             <button
               onClick={handleCopy}
@@ -373,16 +344,65 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* 2. MAIN CONTENT - 3 Column Layout */}
+      {/* 2. MAIN CONTENT */}
       <main className="flex-1 flex overflow-hidden">
 
-        {/* Left Column: Editor */}
-        <div className="w-[30%] min-w-[320px] max-w-[500px] border-r border-[#E5E5E5] flex flex-col bg-white">
-          <Editor value={markdown} onChange={setMarkdown} />
+        {/* Left Column: Editor with AI Action Bar */}
+        <div className="w-[30%] min-w-[320px] max-w-[500px] border-r border-[#E5E5E5] flex flex-col bg-gray-50 relative">
+          {/* Editor with bottom padding for action bar */}
+          <div className="flex-1 overflow-hidden">
+            <textarea
+              className="w-full h-full p-6 pb-16 resize-none focus:outline-none bg-gray-50 text-gray-700 font-mono text-sm leading-relaxed"
+              value={markdown}
+              onChange={(e) => setMarkdown(e.target.value)}
+              placeholder="# Start typing your markdown here..."
+              spellCheck={false}
+            />
+          </div>
+
+          {/* AI Action Bar - Sticky Bottom */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gray-50 px-4 py-3">
+            <div className="flex items-center gap-2">
+              {/* Action Buttons */}
+              {[
+                { id: 'fix-markdown', icon: Wrench, label: '格式修复', color: 'bg-slate-600' },
+                { id: 'polish', icon: Sparkles, label: '润色', color: 'bg-violet-600' },
+                { id: 'title', icon: Type, label: '标题', color: 'bg-blue-600' },
+                { id: 'summary', icon: Wand2, label: '摘要', color: 'bg-emerald-600' },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleAiAction(item.id as AIActionType)}
+                  disabled={!aiConfigured}
+                  className={`
+                    flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all flex-shrink-0 shadow-sm
+                    ${aiConfigured
+                      ? `${item.color} text-white hover:opacity-90 hover:shadow`
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }
+                  `}
+                  title={!aiConfigured ? '请先配置 AI 设置' : item.label}
+                >
+                  <item.icon size={12} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+
+              {/* Settings hint if not configured */}
+              {!aiConfigured && (
+                <button
+                  onClick={() => setShowSettingsModal(true)}
+                  className="text-xs text-amber-600 hover:text-amber-700 underline flex-shrink-0 ml-auto"
+                >
+                  配置 AI →
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Center Column: Preview */}
-        <div className="flex-1 bg-[#F5F5F5] flex flex-col relative min-w-[375px] overflow-hidden">
+        <div className="flex-1 bg-[#F5F5F5] flex flex-col relative min-w-[375px]">
           {/* Preview Toolbar / Info (Optional) */}
           <div className="h-10 flex items-center justify-center text-xs text-[#999999] bg-[#F5F5F5] select-none">
             {editorMode === 'wechat' ? (
@@ -392,7 +412,7 @@ const App: React.FC = () => {
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto flex justify-center p-4 md:p-8">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden flex justify-center p-4 md:p-8">
             {/* Preview Container */}
             {editorMode === 'wechat' ? (
               <div className="w-full max-w-[420px] bg-white min-h-[800px] shadow-sm border border-[#E5E5E5] transition-all duration-200">
@@ -417,28 +437,14 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Control Panel */}
+        {/* Right Column: Design Panel Only */}
         <div className="w-[320px] flex-shrink-0 bg-white border-l border-[#E5E5E5] flex flex-col">
-          {/* Tabs */}
-          <div className="flex border-b border-[#E5E5E5]">
-            <button
-              onClick={() => setActiveTab('design')}
-              className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'design' ? 'text-[#333333] border-[#333333]' : 'text-[#999999] border-transparent hover:text-[#666666]'}`}
-            >
-              {editorMode === 'wechat' ? '主题' : '设计'}
-            </button>
-            <button
-              onClick={() => setActiveTab('ai')}
-              className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'ai' ? 'text-[#333333] border-[#333333]' : 'text-[#999999] border-transparent hover:text-[#666666]'}`}
-            >
-              AI 助手
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'settings' ? 'text-[#333333] border-[#333333]' : 'text-[#999999] border-transparent hover:text-[#666666]'}`}
-            >
-              设置
-            </button>
+          {/* Panel Header */}
+          <div className="h-10 flex items-center px-4 border-b border-[#E5E5E5] bg-[#FAFAFA]">
+            <Palette size={14} className="text-[#999999] mr-2" />
+            <span className="text-xs font-medium text-[#666666]">
+              {editorMode === 'wechat' ? '主题样式' : '模板设计'}
+            </span>
           </div>
 
           {/* Panel Content */}
@@ -448,6 +454,110 @@ const App: React.FC = () => {
         </div>
 
       </main>
+
+      {/* Polish Style Selection Modal */}
+      {showPolishModal && (
+        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]">
+          <div className="bg-white rounded-xl shadow-2xl ring-1 ring-black/5 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center">
+              <h3 className="font-medium text-[#333333] flex items-center gap-2">
+                <Sparkles size={16} className="text-[#1677FF]" />
+                选择润色方向
+              </h3>
+              <button
+                onClick={() => setShowPolishModal(false)}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#333333] hover:bg-[#F5F5F5] transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Style Options */}
+            <div className="p-4 max-h-[400px] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {POLISH_STYLES.map((style) => (
+                  <button
+                    key={style.id}
+                    onClick={() => {
+                      setSelectedPolishStyle(style);
+                      setCustomPolishPrompt("");
+                    }}
+                    className={`
+                      p-3 rounded-lg border-2 text-left transition-all duration-200
+                      ${selectedPolishStyle?.id === style.id
+                        ? 'border-[#1677FF] bg-[#F0F7FF]'
+                        : 'border-[#E5E5E5] hover:border-[#1677FF]/50 hover:bg-[#FAFAFA]'
+                      }
+                    `}
+                  >
+                    <div className={`text-sm font-medium mb-0.5 ${selectedPolishStyle?.id === style.id ? 'text-[#1677FF]' : 'text-[#333333]'}`}>
+                      {style.name}
+                    </div>
+                    <div className="text-xs text-[#999999]">{style.description}</div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom Prompt */}
+              <div className="border-t border-[#E5E5E5] pt-4">
+                <label className="block text-xs text-[#666666] mb-2">或者输入自定义润色要求：</label>
+                <textarea
+                  value={customPolishPrompt}
+                  onChange={(e) => {
+                    setCustomPolishPrompt(e.target.value);
+                    if (e.target.value) setSelectedPolishStyle(null);
+                  }}
+                  placeholder="例如：让文章更有幽默感，增加一些网络流行语..."
+                  className="w-full h-20 px-3 py-2 text-sm border border-[#E5E5E5] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#1677FF]/20 focus:border-[#1677FF] transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-[#E5E5E5] bg-[#FAFAFA] flex justify-end gap-3">
+              <button
+                onClick={() => setShowPolishModal(false)}
+                className="px-4 py-2 text-sm text-[#666666] hover:text-[#333333] transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handlePolishConfirm}
+                className="px-5 py-2 bg-[#1677FF] hover:bg-[#0958D9] text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow flex items-center gap-1.5"
+              >
+                开始润色
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]">
+          <div className="bg-white rounded-xl shadow-2xl ring-1 ring-black/5 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-[#E5E5E5] flex justify-between items-center">
+              <h3 className="font-medium text-[#333333] flex items-center gap-2">
+                <Settings size={16} className="text-[#999999]" />
+                设置
+              </h3>
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[#999999] hover:text-[#333333] hover:bg-[#F5F5F5] transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {/* Content */}
+            <div className="max-h-[70vh] overflow-y-auto">
+              <SettingsPanel onConfigChange={handleAiConfigChange} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* AI Modal (Global) */}
       {showAiModal && (
